@@ -1,0 +1,4 @@
+- Java9 模块化以后，一切都变了，只能通过 --add-exports 和 --add-opens 来打破模块封装
+  - --add-exports 导出特定的包
+  - --add-opens 允许模块中特定包的类路径深度反射访问 
+    - --add-opens java.base/java.lang=ALL-UNNAMED

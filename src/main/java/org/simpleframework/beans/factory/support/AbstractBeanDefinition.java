@@ -26,7 +26,26 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     protected AbstractBeanDefinition(BeanDefinition original) {
         setBeanClassName(original.getBeanClassName());
         setScope(original.getScope());
-        setLazyInit(original.isLazyInit());
+        if (original instanceof AbstractBeanDefinition originalAbd) {
+            if (originalAbd.hasBeanClass()) {
+                setBeanClass(originalAbd.getBeanClass());
+            }
+        }
+        if (lazyInit != null) {
+            setLazyInit(original.isLazyInit());
+        }
+    }
+
+    /**
+     * <h2>克隆这个 bean 定义。</h2>
+     *
+     * @return 定义信息
+     */
+    public abstract AbstractBeanDefinition cloneBeanDefinition();
+
+    @Override
+    public Object clone() {
+        return cloneBeanDefinition();
     }
 
     @Override
@@ -61,10 +80,26 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 
     @Override
     public boolean isLazyInit() {
-        return lazyInit;
+        return (this.lazyInit != null && this.lazyInit);
     }
 
     public void setBeanClass(Class<?> beanClass) {
         this.beanClass = beanClass;
+    }
+
+    public Class<?> getBeanClass() throws IllegalStateException {
+        Object beanClassObject = this.beanClass;
+        if (beanClassObject == null) {
+            throw new IllegalStateException("No bean class specified on bean definition");
+        }
+        if (!(beanClassObject instanceof Class)) {
+            throw new IllegalStateException(
+                    "Bean class name [" + beanClassObject + "] has not been resolved into an actual Class");
+        }
+        return (Class<?>) beanClassObject;
+    }
+
+    public boolean hasBeanClass() {
+        return (this.beanClass instanceof Class);
     }
 }

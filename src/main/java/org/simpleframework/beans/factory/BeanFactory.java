@@ -12,10 +12,19 @@ import org.simpleframework.beans.BeansException;
 public interface BeanFactory {
 
     /**
-     * <h1>按名字获取 bean</h1>
+     * <h2>按名字获取 bean</h2>
      *
      * @param name 名字
      * @return bean
      */
     Object getBean(String name) throws BeansException;
+
+    /**
+     * <h2>按名字获取 bean</h2>
+     *
+     * @param name 名字
+     * @param args 参数
+     * @return bean
+     */
+    Object getBean(String name, Object... args) throws BeansException;
 }

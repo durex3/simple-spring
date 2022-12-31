@@ -17,16 +17,29 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     protected abstract BeanDefinition getBeanDefinition(String beanName);
 
-    protected abstract Object createBean(String beanName, BeanDefinition beanDefinition);
+    protected abstract Object createBean(String beanName, RootBeanDefinition mbd, Object... args);
 
     @Override
     public Object getBean(String name) throws BeansException {
+        return getBean(name, (Object) null);
+    }
+
+    @Override
+    public Object getBean(String name, Object... args) throws BeansException {
         Object bean = getSingleton(name);
         if (bean != null) {
             return bean;
         }
 
         BeanDefinition beanDefinition = getBeanDefinition(name);
-        return createBean(name, beanDefinition);
+        RootBeanDefinition rootBeanDefinition = getMergedBeanDefinition(beanDefinition);
+        return createBean(name, rootBeanDefinition, args);
+    }
+
+    protected RootBeanDefinition getMergedBeanDefinition(BeanDefinition bd) {
+        if (bd instanceof RootBeanDefinition mbd) {
+            return mbd.cloneBeanDefinition();
+        }
+        return new RootBeanDefinition(bd);
     }
 }

@@ -6,4 +6,14 @@ package org.simpleframework.service;
  * @version: 1.0
  */
 public class UserService {
+
+    private String name;
+
+    public UserService(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
