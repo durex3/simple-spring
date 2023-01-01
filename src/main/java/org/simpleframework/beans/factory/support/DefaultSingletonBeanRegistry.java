@@ -2,8 +2,8 @@ package org.simpleframework.beans.factory.support;
 
 import org.simpleframework.beans.factory.config.SingletonBeanRegistry;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <h1>默认单例注册中心实现</h1>
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
-    private final Map<String, Object> singletonObjects = new HashMap<>();
+    private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
 
     @Override
     public Object getSingleton(String beanName) {

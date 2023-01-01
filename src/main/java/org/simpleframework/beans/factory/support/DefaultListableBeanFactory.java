@@ -3,8 +3,8 @@ package org.simpleframework.beans.factory.support;
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <h1>默认实现，基于 bean 定义成熟 bean 工厂</h1>
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry {
 
-    private final Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
+    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
 
     @Override
     protected BeanDefinition getBeanDefinition(String beanName) {
