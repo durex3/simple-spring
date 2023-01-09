@@ -5,9 +5,9 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
 /**
  * <h1>抽象 bean 的定义信息</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-30 23:53:27
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-30 23:53:27
  */
 public abstract class AbstractBeanDefinition implements BeanDefinition {
 

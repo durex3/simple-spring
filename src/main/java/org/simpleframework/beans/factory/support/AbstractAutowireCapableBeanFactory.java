@@ -8,9 +8,9 @@ import java.util.Arrays;
 /**
  * <h1>抽象的 bean 工厂，能够实现自动装配</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 12:36:43
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 12:36:43
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
 
@@ -24,7 +24,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
-        addSingleton(beanName, bean);
         return bean;
     }
 
@@ -35,7 +34,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             throw new BeansException(beanName + " No default constructor found");
         }
         Constructor<?> constructorToUse = Arrays.stream(declaredConstructors)
-                .filter(ctor -> null != args && ctor.getParameterTypes().length == args.length)
+                .filter(ctor -> (args == null && ctor.getParameterCount() == 0) ||
+                        (args != null && ctor.getParameterTypes().length == args.length))
                 .findFirst().orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
 
         return instantiationStrategy.instantiate(mbd, beanName, constructorToUse, args);

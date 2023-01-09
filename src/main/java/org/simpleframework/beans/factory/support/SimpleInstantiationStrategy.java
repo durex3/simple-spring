@@ -8,9 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * <h1>在 BeanFactory 中使用的简单对象实例化策略</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 22:13:41
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 22:13:41
  */
 public class SimpleInstantiationStrategy implements InstantiationStrategy {
 

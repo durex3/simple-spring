@@ -6,9 +6,9 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.service.UserService;
 
 /**
- * @Author: liugelong
- * @createTime: 2022-12-31 13:16:51
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 13:16:51
  */
 class DefaultListableBeanFactoryTest {
 

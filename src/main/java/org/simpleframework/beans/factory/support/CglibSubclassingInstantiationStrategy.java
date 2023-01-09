@@ -13,9 +13,9 @@ import java.lang.reflect.InvocationTargetException;
  * <p>如果容器需要覆盖方法以实现方法注入，则使用 CGLIB 动态生成子类</p>
  * <p>jdk 9 之后需要添加 jvm 参数才能进行反射</p>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 22:28:55
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 22:28:55
  */
 public class CglibSubclassingInstantiationStrategy implements InstantiationStrategy {
 

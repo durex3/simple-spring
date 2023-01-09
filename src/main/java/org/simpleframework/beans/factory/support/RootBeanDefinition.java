@@ -3,9 +3,9 @@ package org.simpleframework.beans.factory.support;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 
 /**
- * @Author: liugelong
- * @createTime: 2022-12-31 13:22:03
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 13:22:03
  */
 public class RootBeanDefinition extends AbstractBeanDefinition {
 

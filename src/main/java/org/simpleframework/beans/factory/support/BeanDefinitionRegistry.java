@@ -5,9 +5,9 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
 /**
  * <h1>用于保存 bean 定义的注册表的接口</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 12:47:41
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 12:47:41
  */
 public interface BeanDefinitionRegistry {
 

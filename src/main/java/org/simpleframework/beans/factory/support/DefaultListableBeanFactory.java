@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * <h1>默认实现，基于 bean 定义成熟 bean 工厂</h1>
  * <p>定义 BeanDefinition map</p>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 12:46:16
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 12:46:16
  */
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry {
 

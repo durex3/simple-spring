@@ -1,9 +1,9 @@
 package org.simpleframework.beans;
 
 /**
- * @Author: liugelong
- * @createTime: 2022-12-31 12:27:16
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 12:27:16
  */
 public class BeansException extends RuntimeException {
 

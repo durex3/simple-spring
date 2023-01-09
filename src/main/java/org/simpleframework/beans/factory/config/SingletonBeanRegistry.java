@@ -3,9 +3,9 @@ package org.simpleframework.beans.factory.config;
 /**
  * <h1>单例注册中心</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-30 23:07:25
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-30 23:07:25
  */
 public interface SingletonBeanRegistry {
 

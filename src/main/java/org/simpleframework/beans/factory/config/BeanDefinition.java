@@ -3,9 +3,9 @@ package org.simpleframework.beans.factory.config;
 /**
  * <h1>bean 的定义信息</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-30 22:17:29
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-30 22:17:29
  */
 public interface BeanDefinition {
 

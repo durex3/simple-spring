@@ -7,9 +7,9 @@ import java.lang.reflect.Constructor;
 /**
  * <h1>bean 实例化策略</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 21:29:32
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 21:29:32
  */
 public interface InstantiationStrategy {
 

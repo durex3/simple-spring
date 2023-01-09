@@ -10,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
  * <h1>Byte Buddy 是一个 JVM 的运行时代码生成器</h1>
  * <p>通过 Java Agent，或者在构建期间修改字节码</p>
  *
- * @Author: liugelong
- * @createTime: 2023-01-01 01:38:08
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2023-01-01 01:38:08
  */
 public class ByteBuddyInstantiationStrategy implements InstantiationStrategy {
 

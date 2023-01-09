@@ -5,9 +5,9 @@ import org.simpleframework.beans.BeansException;
 /**
  * <h1>最基础的 bean 工厂</h1>
  *
- * @Author: liugelong
- * @createTime: 2022-12-30 22:18:53
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-30 22:18:53
  */
 public interface BeanFactory {
 

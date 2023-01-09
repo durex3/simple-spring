@@ -9,15 +9,15 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
  * <p>定义 获取 bean 的定义信息</p>
  * <p>定义 创建 bean</p>
  *
- * @Author: liugelong
- * @createTime: 2022-12-31 12:35:34
- * @version: 1.0
+ * @author liugelong
+ * @version 1.0
+ * @since 1.0 2022-12-31 12:35:34
  */
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
 
     protected abstract BeanDefinition getBeanDefinition(String beanName);
 
-    protected abstract Object createBean(String beanName, RootBeanDefinition mbd, Object... args);
+    protected abstract Object createBean(String beanName, RootBeanDefinition mbd, Object... args) throws BeansException;
 
     @Override
     public Object getBean(String name) throws BeansException {
@@ -30,14 +30,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     protected Object doGetBean(String name, Object[] args) {
-        Object bean = getSingleton(name);
-        if (bean != null) {
-            return bean;
-        }
-
         BeanDefinition beanDefinition = getBeanDefinition(name);
         RootBeanDefinition rootBeanDefinition = getMergedBeanDefinition(beanDefinition);
-        return createBean(name, rootBeanDefinition, args);
+        return getSingleton(name, () -> createBean(name, rootBeanDefinition, args));
     }
 
     protected RootBeanDefinition getMergedBeanDefinition(BeanDefinition bd) {
