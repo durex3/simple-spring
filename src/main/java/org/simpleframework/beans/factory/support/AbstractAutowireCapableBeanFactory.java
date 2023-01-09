@@ -1,6 +1,10 @@
 package org.simpleframework.beans.factory.support;
 
 import org.simpleframework.beans.BeansException;
+import org.simpleframework.beans.MutablePropertyValues;
+import org.simpleframework.beans.PropertyValues;
+import org.simpleframework.beans.factory.config.BeanReference;
+import org.simpleframework.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -21,11 +25,54 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Object bean;
         try {
             bean = createBeanInstance(beanName, mbd, args);
+            populateBean(beanName, mbd, bean);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
         return bean;
     }
+
+    /**
+     * <h2>填充 bean 属性</h2>
+     *
+     * @param beanName bean 名字
+     * @param mbd      bean 定义信息
+     * @param bean     bean 实例
+     */
+    protected void populateBean(String beanName, RootBeanDefinition mbd, Object bean) {
+        if (mbd.hasPropertyValues()) {
+            applyPropertyValues(beanName, mbd, bean, mbd.getPropertyValues());
+        }
+    }
+
+    /**
+     * <h2>bean 属性赋值</h2>
+     *
+     * @param beanName bean 名字
+     * @param mbd      bean 定义信息
+     * @param bean     bean 实例
+     * @param pvs      bean 属性
+     */
+    protected void applyPropertyValues(String beanName, RootBeanDefinition mbd, Object bean, PropertyValues pvs) {
+        if (pvs instanceof MutablePropertyValues mpvs) {
+            try {
+                mpvs.stream().forEach(mpv -> {
+                    String name = mpv.getName();
+                    Object value = mpv.getValue();
+
+                    if (value instanceof BeanReference beanReference) {
+                        // A 依赖 B，获取 B 的实例化
+                        value = getBean(beanReference.getBeanName());
+                    }
+                    // 属性填充
+                    ReflectionUtils.setFieldValue(bean, name, value);
+                });
+            } catch (Exception e) {
+                throw new BeansException("Error setting property values: " + beanName, e);
+            }
+        }
+    }
+
 
     protected Object createBeanInstance(String beanName, RootBeanDefinition mbd, Object... args) {
         Class<?> beanClass = mbd.getBeanClass();
@@ -33,10 +80,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         if (declaredConstructors.length == 0) {
             throw new BeansException(beanName + " No default constructor found");
         }
-        Constructor<?> constructorToUse = Arrays.stream(declaredConstructors)
-                .filter(ctor -> (args == null && ctor.getParameterCount() == 0) ||
-                        (args != null && ctor.getParameterTypes().length == args.length))
-                .findFirst().orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
+        Constructor<?> constructorToUse = Arrays.stream(declaredConstructors).filter(ctor -> (args == null && ctor.getParameterCount() == 0) || (args != null && ctor.getParameterTypes().length == args.length)).findFirst().orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
 
         return instantiationStrategy.instantiate(mbd, beanName, constructorToUse, args);
     }

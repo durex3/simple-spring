@@ -1,5 +1,7 @@
 package org.simpleframework.beans.factory.config;
 
+import org.simpleframework.beans.MutablePropertyValues;
+
 /**
  * <h1>bean 的定义信息</h1>
  *
@@ -50,4 +52,18 @@ public interface BeanDefinition {
      * @return true false
      */
     boolean isLazyInit();
+
+    /**
+     * <h2>获取 PropertyValues</h2>
+     *
+     * @return {@link MutablePropertyValues}
+     */
+    MutablePropertyValues getPropertyValues();
+
+    /**
+     * <h2>判断是否有PropertyValues </h2>
+     */
+    default boolean hasPropertyValues() {
+        return !getPropertyValues().isEmpty();
+    }
 }

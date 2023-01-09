@@ -7,6 +7,7 @@ package org.simpleframework.service;
  */
 public class UserService {
 
+    private UserDao userDao;
     private String name;
 
     public UserService() {
@@ -18,5 +19,17 @@ public class UserService {
 
     public String getName() {
         return name;
+    }
+
+    public UserDao getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

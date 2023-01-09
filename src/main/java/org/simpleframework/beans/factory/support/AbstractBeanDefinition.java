@@ -1,5 +1,6 @@
 package org.simpleframework.beans.factory.support;
 
+import org.simpleframework.beans.MutablePropertyValues;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 
 /**
@@ -10,6 +11,8 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
  * @since 1.0 2022-12-30 23:53:27
  */
 public abstract class AbstractBeanDefinition implements BeanDefinition {
+
+    private MutablePropertyValues propertyValues;
 
     public static final String SCOPE_DEFAULT = "";
 
@@ -33,6 +36,9 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
         }
         if (lazyInit != null) {
             setLazyInit(original.isLazyInit());
+        }
+        if (original.hasPropertyValues()) {
+            setPropertyValues(new MutablePropertyValues(original.getPropertyValues()));
         }
     }
 
@@ -81,6 +87,18 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     @Override
     public boolean isLazyInit() {
         return (this.lazyInit != null && this.lazyInit);
+    }
+
+    @Override
+    public MutablePropertyValues getPropertyValues() {
+        if (this.propertyValues == null) {
+            this.propertyValues = new MutablePropertyValues();
+        }
+        return this.propertyValues;
+    }
+
+    public void setPropertyValues(MutablePropertyValues propertyValues) {
+        this.propertyValues = propertyValues;
     }
 
     public void setBeanClass(Class<?> beanClass) {
