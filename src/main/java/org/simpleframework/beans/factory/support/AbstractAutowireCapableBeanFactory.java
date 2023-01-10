@@ -80,7 +80,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         if (declaredConstructors.length == 0) {
             throw new BeansException(beanName + " No default constructor found");
         }
-        Constructor<?> constructorToUse = Arrays.stream(declaredConstructors).filter(ctor -> (args == null && ctor.getParameterCount() == 0) || (args != null && ctor.getParameterTypes().length == args.length)).findFirst().orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
+        Constructor<?> constructorToUse = Arrays.stream(declaredConstructors)
+                .filter(ctor -> (args == null && ctor.getParameterCount() == 0)
+                        || (args != null && ctor.getParameterTypes().length == args.length))
+                .findFirst()
+                .orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
 
         return instantiationStrategy.instantiate(mbd, beanName, constructorToUse, args);
     }
