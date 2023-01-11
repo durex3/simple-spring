@@ -1,10 +1,14 @@
 package org.simpleframework.service;
 
+import org.simpleframework.dao.UserDao;
+import org.simpleframework.stereotype.Service;
+
 /**
  * @author liugelong
  * @version 1.0
  * @since 1.0 2022-12-31 13:30:42
  */
+@Service(value = "user")
 public class UserService {
 
     private UserDao userDao;

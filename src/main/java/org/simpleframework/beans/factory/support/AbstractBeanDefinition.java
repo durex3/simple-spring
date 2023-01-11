@@ -29,14 +29,15 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     protected AbstractBeanDefinition(BeanDefinition original) {
         setBeanClassName(original.getBeanClassName());
         setScope(original.getScope());
-        if (original instanceof AbstractBeanDefinition originalAbd) {
-            if (originalAbd.hasBeanClass()) {
-                setBeanClass(originalAbd.getBeanClass());
-            }
+
+        AbstractBeanDefinition originalAd = ((AbstractBeanDefinition) original);
+        if (originalAd.hasBeanClass()) {
+            setBeanClass(originalAd.getBeanClass());
         }
         if (lazyInit != null) {
             setLazyInit(original.isLazyInit());
         }
+
         if (original.hasPropertyValues()) {
             setPropertyValues(new MutablePropertyValues(original.getPropertyValues()));
         }

@@ -25,7 +25,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     }
 
     public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
-        if (beanName == null || beanName.isBlank()) {
+        if (beanName == null || beanName.isEmpty()) {
             throw new BeansException("Bean name must not be null");
         }
         synchronized (this.singletonObjects) {

@@ -1,5 +1,8 @@
-package org.simpleframework.service;
+package org.simpleframework.dao;
 
+import org.simpleframework.stereotype.Repository;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +12,7 @@ import java.util.Map;
  * @version 1.0
  * @since 1.0 2023-01-09 21:06:00
  */
+@Repository
 public class UserDao {
 
     private final Map<String, String> map = new HashMap<>();
@@ -20,6 +24,6 @@ public class UserDao {
     }
 
     public List<String> findAllUsername() {
-        return map.values().stream().toList();
+        return new ArrayList<>(map.values());
     }
 }

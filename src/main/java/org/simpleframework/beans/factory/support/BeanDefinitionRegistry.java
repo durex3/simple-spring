@@ -3,7 +3,7 @@ package org.simpleframework.beans.factory.support;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 
 /**
- * <h1>用于保存 bean 定义的注册表的接口</h1>
+ * <h1>用于保存 bean 定义的注册中心的接口</h1>
  *
  * @author liugelong
  * @version 1.0
@@ -18,4 +18,12 @@ public interface BeanDefinitionRegistry {
      * @param beanDefinition 定义信息
      */
     void registerBeanDefinition(String beanName, BeanDefinition beanDefinition);
+
+
+    /**
+     * <h2>返回注册中心定义的 bean 数量</h2>
+     *
+     * @return 数量
+     */
+    int getBeanDefinitionCount();
 }

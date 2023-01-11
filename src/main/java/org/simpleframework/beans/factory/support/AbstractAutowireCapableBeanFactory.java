@@ -41,7 +41,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      */
     protected void populateBean(String beanName, RootBeanDefinition mbd, Object bean) {
         if (mbd.hasPropertyValues()) {
-            applyPropertyValues(beanName, mbd, bean, mbd.getPropertyValues());
+            applyPropertyValues(beanName, bean, mbd.getPropertyValues());
         }
     }
 
@@ -49,20 +49,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * <h2>bean 属性赋值</h2>
      *
      * @param beanName bean 名字
-     * @param mbd      bean 定义信息
      * @param bean     bean 实例
      * @param pvs      bean 属性
      */
-    protected void applyPropertyValues(String beanName, RootBeanDefinition mbd, Object bean, PropertyValues pvs) {
-        if (pvs instanceof MutablePropertyValues mpvs) {
+    protected void applyPropertyValues(String beanName, Object bean, PropertyValues pvs) {
+        if (pvs instanceof MutablePropertyValues) {
             try {
-                mpvs.stream().forEach(mpv -> {
+                pvs.stream().forEach(mpv -> {
                     String name = mpv.getName();
                     Object value = mpv.getValue();
 
-                    if (value instanceof BeanReference beanReference) {
+                    if (value instanceof BeanReference) {
                         // A 依赖 B，获取 B 的实例化
-                        value = getBean(beanReference.getBeanName());
+                        String beanReferenceName = ((BeanReference) value).getBeanName();
+                        value = getBean(beanReferenceName);
                     }
                     // 属性填充
                     ReflectionUtils.setFieldValue(bean, name, value);

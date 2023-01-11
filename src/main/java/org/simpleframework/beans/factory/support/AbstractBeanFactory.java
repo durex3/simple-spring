@@ -36,8 +36,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     protected RootBeanDefinition getMergedBeanDefinition(BeanDefinition bd) {
-        if (bd instanceof RootBeanDefinition mbd) {
-            return mbd.cloneBeanDefinition();
+        if (bd instanceof RootBeanDefinition) {
+            return ((RootBeanDefinition) bd).cloneBeanDefinition();
         }
         return new RootBeanDefinition(bd);
     }

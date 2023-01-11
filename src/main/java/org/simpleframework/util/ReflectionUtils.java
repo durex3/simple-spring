@@ -36,11 +36,11 @@ public final class ReflectionUtils {
         if (ex instanceof IllegalAccessException) {
             throw new IllegalStateException("Could not access method or field: " + ex.getMessage());
         }
-        if (ex instanceof InvocationTargetException e) {
-            handleInvocationTargetException(e);
+        if (ex instanceof InvocationTargetException) {
+            handleInvocationTargetException((InvocationTargetException) ex);
         }
-        if (ex instanceof RuntimeException e) {
-            throw e;
+        if (ex instanceof RuntimeException) {
+            throw (RuntimeException) ex;
         }
         throw new UndeclaredThrowableException(ex);
     }
@@ -50,11 +50,11 @@ public final class ReflectionUtils {
     }
 
     public static void rethrowRuntimeException(Throwable ex) {
-        if (ex instanceof RuntimeException e) {
-            throw e;
+        if (ex instanceof RuntimeException) {
+            throw (RuntimeException) ex;
         }
-        if (ex instanceof Error e) {
-            throw e;
+        if (ex instanceof Error) {
+            throw new RuntimeException(ex);
         }
         throw new UndeclaredThrowableException(ex);
     }
@@ -67,6 +67,17 @@ public final class ReflectionUtils {
         } catch (Exception ex) {
             handleReflectionException(ex);
         }
+    }
+
+    public static Object getFieldValue(Object object, String fieldName) {
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            makeAccessible(field);
+            return field.get(object);
+        } catch (Exception ex) {
+            handleReflectionException(ex);
+        }
+        return null;
     }
 
     public static void makeAccessible(Field field) {
