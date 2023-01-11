@@ -15,7 +15,6 @@ import java.nio.file.NoSuchFileException;
  */
 public class FileSystemResource implements Resource {
 
-    private final String path;
     private final File file;
 
 
@@ -23,7 +22,13 @@ public class FileSystemResource implements Resource {
         if (file == null) {
             throw new IllegalArgumentException("File must not be null");
         }
-        this.path = file.getPath();
+        this.file = file;
+    }
+
+    public FileSystemResource(String path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Path must not be null");
+        }
         this.file = new File(path);
     }
 
@@ -38,6 +43,6 @@ public class FileSystemResource implements Resource {
 
     @Override
     public URL getURL() throws IOException {
-        return this.file != null ? this.file.toURI().toURL() : null;
+        return this.file.toURI().toURL();
     }
 }

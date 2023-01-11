@@ -7,8 +7,6 @@ import org.simpleframework.core.type.AnnotationMetadata;
 import org.simpleframework.util.ClassUtils;
 
 import java.beans.Introspector;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
