@@ -1,7 +1,7 @@
 package org.simpleframework.core.io.support;
 
-import org.simpleframework.core.io.ClassPathResource;
 import org.simpleframework.core.io.DefaultResourceLoader;
+import org.simpleframework.core.io.FileSystemResource;
 import org.simpleframework.core.io.Resource;
 import org.simpleframework.core.io.ResourceLoader;
 import org.simpleframework.util.ClassUtils;
@@ -58,14 +58,11 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
         Path rootPath = Paths.get(path);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + DEFAULT_RESOURCE_PATTERN);
         try (Stream<Path> fileAndDirs = Files.walk(rootPath)) {
-            String finalLocationPattern = locationPattern;
             return fileAndDirs.filter(matcher::matches)
                     .map(p -> {
                         // D:/programming/project/Java/simple-spring/target/test-classes/org/simpleframework/service/UserDao.class
                         String absoluteFilePath = p.toString().replace("\\", "/");
-                        // org/simpleframework/service/UserDao.class
-                        String classPath = absoluteFilePath.substring(absoluteFilePath.lastIndexOf(finalLocationPattern));
-                        return new ClassPathResource(classPath);
+                        return new FileSystemResource(absoluteFilePath);
                     }).toArray(Resource[]::new);
         }
     }
