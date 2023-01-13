@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<beans>
+    <bean name="userDao" class="org.simpleframework.dao.UserDao"/>
+    <bean id="userService" class="org.simpleframework.service.UserService">
+        <property name="name" value="durex3"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+</beans>

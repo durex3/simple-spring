@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.RuntimeBeanReference;
+import org.simpleframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.simpleframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.simpleframework.dao.UserDao;
 import org.simpleframework.service.UserService;
@@ -65,7 +66,7 @@ class DefaultListableBeanFactoryTest {
     }
 
     @Test
-    void testBeanDefinitionScannerDoScan() {
+    void testLoadBeanDefinitionByAnnotation() {
         // 1.初始化 BeanFactory
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
@@ -76,6 +77,22 @@ class DefaultListableBeanFactoryTest {
 
         // 3.获取 bean
         UserService userService = (UserService) beanFactory.getBean("user");
+        Assertions.assertNotNull(userService);
+    }
+
+    @Test
+    void testLoadBeanDefinitionByXml() {
+        // 1.初始化 BeanFactory
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+        // 2.初始化 XmlBeanDefinitionReader
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions("classpath:spring.xml");
+
+        // 3.获取 bean
+        UserDao userDao = (UserDao) beanFactory.getBean("userDao");
+        Assertions.assertNotNull(userDao);
+        UserService userService = (UserService) beanFactory.getBean("userService");
         Assertions.assertNotNull(userService);
     }
 }

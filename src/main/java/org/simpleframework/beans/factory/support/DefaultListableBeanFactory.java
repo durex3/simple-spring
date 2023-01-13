@@ -1,6 +1,7 @@
 package org.simpleframework.beans.factory.support;
 
 import org.simpleframework.beans.BeansException;
+import org.simpleframework.beans.factory.BeanDefinitionStoreException;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 
 import java.util.Map;
@@ -29,6 +30,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+        BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+        if (existingDefinition != null) {
+            throw new BeanDefinitionStoreException("Cannot register bean definition [" + beanDefinition + "] for bean '" + beanName + "': There is already [" + existingDefinition + "] bound.");
+        }
         beanDefinitionMap.put(beanName, beanDefinition);
     }
 
