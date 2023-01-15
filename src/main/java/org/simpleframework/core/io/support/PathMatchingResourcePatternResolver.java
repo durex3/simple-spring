@@ -45,9 +45,19 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
         return this.resourceLoader;
     }
 
-    protected static Resource[] findPathMatchingResources(String locationPattern) throws IOException {
-        locationPattern = locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()).replace(DEFAULT_RESOURCE_PATTERN, "");
-        URL url = ClassUtils.getDefaultClassLoader().getResource(locationPattern);
+    protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
+        // classpath*:org/simpleframework/**/*.class
+        String location = locationPattern;
+        if (locationPattern.startsWith(CLASSPATH_ALL_URL_PREFIX)) {
+            // classpath*:org/simpleframework/
+            location = determineRootDir(locationPattern);
+        }
+        // **/*.class
+        String subPattern = locationPattern.substring(location.length());
+        // org/simpleframework/
+        location = location.substring(CLASSPATH_ALL_URL_PREFIX.length());
+
+        URL url = ClassUtils.getDefaultClassLoader().getResource(location);
         if (url == null) {
             throw new IllegalArgumentException("location pattern not found.");
         }
@@ -56,15 +66,27 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
             path = path.substring(1);
         }
         Path rootPath = Paths.get(path);
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + DEFAULT_RESOURCE_PATTERN);
+
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + subPattern);
         try (Stream<Path> fileAndDirs = Files.walk(rootPath)) {
-            return fileAndDirs.filter(matcher::matches)
-                    .map(p -> {
-                        // D:/programming/project/Java/simple-spring/target/test-classes/org/simpleframework/service/UserDao.class
-                        String absoluteFilePath = p.toString().replace("\\", "/");
-                        return new FileSystemResource(absoluteFilePath);
-                    }).toArray(Resource[]::new);
+            return fileAndDirs.filter(matcher::matches).map(p -> {
+                // D:/programming/project/Java/simple-spring/target/test-classes/org/simpleframework/service/UserDao.class
+                String absoluteFilePath = p.toString().replace("\\", "/");
+                return new FileSystemResource(absoluteFilePath);
+            }).toArray(Resource[]::new);
         }
     }
 
+    protected String determineRootDir(String location) {
+        // classpath*:org/simpleframework/**/*.class
+        int prefixEnd = location.indexOf(':') + 1;
+        int rootDirEnd = location.length();
+        while (rootDirEnd > prefixEnd && location.substring(prefixEnd, rootDirEnd).contains("*")) {
+            rootDirEnd = location.lastIndexOf('/', rootDirEnd - 2) + 1;
+        }
+        if (rootDirEnd == 0) {
+            rootDirEnd = prefixEnd;
+        }
+        return location.substring(0, rootDirEnd);
+    }
 }
