@@ -91,6 +91,11 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     }
 
     @Override
+    public boolean isSingleton() {
+        return SCOPE_SINGLETON.equals(this.scope) || SCOPE_DEFAULT.equals(this.scope);
+    }
+
+    @Override
     public MutablePropertyValues getPropertyValues() {
         if (this.propertyValues == null) {
             this.propertyValues = new MutablePropertyValues();

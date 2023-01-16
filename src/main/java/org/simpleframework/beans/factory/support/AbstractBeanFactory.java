@@ -1,8 +1,13 @@
 package org.simpleframework.beans.factory.support;
 
 import org.simpleframework.beans.BeansException;
-import org.simpleframework.beans.factory.BeanFactory;
 import org.simpleframework.beans.factory.config.BeanDefinition;
+import org.simpleframework.beans.factory.config.BeanPostProcessor;
+import org.simpleframework.beans.factory.config.ConfigurableBeanFactory;
+import org.simpleframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <h1>抽象的 bean 工厂</h1>
@@ -13,7 +18,10 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
  * @version 1.0
  * @since 1.0 2022-12-31 12:35:34
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+
+    private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
+    private volatile boolean hasInstantiationAwareBeanPostProcessors;
 
     protected abstract BeanDefinition getBeanDefinition(String beanName);
 
@@ -29,6 +37,22 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return doGetBean(name, args);
     }
 
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        if (beanPostProcessor == null) {
+            throw new IllegalArgumentException("BeanPostProcessor must not be null");
+        }
+        this.beanPostProcessors.remove(beanPostProcessor);
+        if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+            this.hasInstantiationAwareBeanPostProcessors = true;
+        }
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return this.beanPostProcessors;
+    }
+
     protected Object doGetBean(String name, Object[] args) {
         BeanDefinition beanDefinition = getBeanDefinition(name);
         RootBeanDefinition rootBeanDefinition = getMergedBeanDefinition(beanDefinition);
@@ -40,5 +64,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             return ((RootBeanDefinition) bd).cloneBeanDefinition();
         }
         return new RootBeanDefinition(bd);
+    }
+
+    protected boolean hasInstantiationAwareBeanPostProcessors() {
+        return this.hasInstantiationAwareBeanPostProcessors;
     }
 }

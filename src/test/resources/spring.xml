@@ -6,4 +6,12 @@
         <property name="name" value="durex3"/>
         <property name="userDao" ref="userDao"/>
     </bean>
+    <bean name="myBeanFactoryPostProcessor" class="org.simpleframework.conig.MyBeanFactoryPostProcessor"/>
+    <bean name="myBeanFactoryPostProcessor2" class="org.simpleframework.conig.MyBeanFactoryPostProcessor2"/>
+    <bean name="myBeanPostProcessor" class="org.simpleframework.conig.MyBeanPostProcessor"/>
+    <bean name="myBeanPostProcessor2" class="org.simpleframework.conig.MyBeanPostProcessor2"/>
+    <bean name="myInstantiationAwareBeanPostProcessor"
+          class="org.simpleframework.conig.MyInstantiationAwareBeanPostProcessor"/>
+    <bean name="myInstantiationAwareBeanPostProcessor2"
+          class="org.simpleframework.conig.MyInstantiationAwareBeanPostProcessor2"/>
 </beans>

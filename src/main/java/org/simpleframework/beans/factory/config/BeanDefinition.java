@@ -11,6 +11,10 @@ import org.simpleframework.beans.MutablePropertyValues;
  */
 public interface BeanDefinition {
 
+    String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
+
+    String SCOPE_PROTOTYPE = ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
     /**
      * <h2>设置 bean 的类名</h2>
      *
@@ -52,6 +56,13 @@ public interface BeanDefinition {
      * @return true false
      */
     boolean isLazyInit();
+
+    /**
+     * <h2>判断是否是单例</h2>
+     *
+     * @return true false
+     */
+    boolean isSingleton();
 
     /**
      * <h2>获取 PropertyValues</h2>
