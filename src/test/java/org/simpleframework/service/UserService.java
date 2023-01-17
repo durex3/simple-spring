@@ -8,7 +8,7 @@ import org.simpleframework.stereotype.Service;
  * @version 1.0
  * @since 1.0 2022-12-31 13:30:42
  */
-@Service(value = "user")
+@Service(value = "userService")
 public class UserService {
 
     private UserDao userDao;

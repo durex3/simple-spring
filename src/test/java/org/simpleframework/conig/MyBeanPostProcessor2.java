@@ -2,12 +2,14 @@ package org.simpleframework.conig;
 
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
+import org.simpleframework.stereotype.Component;
 
 /**
  * @author liugelong
  * @version 1.0
  * @since 1.0 2023-01-16 21:31:56
  */
+@Component
 public class MyBeanPostProcessor2 implements BeanPostProcessor {
 
     @Override
