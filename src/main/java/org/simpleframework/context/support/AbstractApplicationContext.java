@@ -109,7 +109,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     }
 
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
-        beanFactory.getBeanDefinitionNames();
+        beanFactory.preInstantiateSingletons();
     }
 
     protected ResourcePatternResolver getResourcePatternResolver() {
