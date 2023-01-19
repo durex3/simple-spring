@@ -45,6 +45,7 @@ class AnnotationConfigApplicationContextTest {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.config");
         User user = (User) applicationContext.getBean("user");
         Assertions.assertNotNull(user);
+        Assertions.assertEquals("durex3", user.getName());
         // 3.关闭容器
         applicationContext.registerShutdownHook();
     }

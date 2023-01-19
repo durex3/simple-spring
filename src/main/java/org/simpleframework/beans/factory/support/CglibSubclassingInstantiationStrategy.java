@@ -17,7 +17,7 @@ import java.lang.reflect.InvocationTargetException;
  * @version 1.0
  * @since 1.0 2022-12-31 22:28:55
  */
-public class CglibSubclassingInstantiationStrategy implements InstantiationStrategy {
+public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationStrategy {
 
     @Override
     public Object instantiate(RootBeanDefinition rd, String beanName, Constructor<?> ctor, Object... args) throws BeansException {

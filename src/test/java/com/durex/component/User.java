@@ -10,6 +10,12 @@ import org.simpleframework.beans.factory.InitializingBean;
  */
 public class User implements InitializingBean, DisposableBean {
 
+    private final String name;
+
+    public User(String name) {
+        this.name = name;
+    }
+
     public void init() {
         System.out.println("User init 执行了");
     }
@@ -26,5 +32,9 @@ public class User implements InitializingBean, DisposableBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         System.out.println("User afterPropertiesSet 执行了");
+    }
+
+    public String getName() {
+        return name;
     }
 }

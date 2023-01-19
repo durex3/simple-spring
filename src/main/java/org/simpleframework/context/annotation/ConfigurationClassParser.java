@@ -1,10 +1,10 @@
 package org.simpleframework.context.annotation;
 
-import org.simpleframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.simpleframework.core.type.AnnotationMetadata;
+import org.simpleframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.simpleframework.beans.factory.config.BeanDefinition;
+import org.simpleframework.beans.factory.config.BeanDefinitionHolder;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -15,21 +15,32 @@ import java.util.Set;
  */
 public class ConfigurationClassParser {
 
-    public Set<ConfigurationClass> parse(Set<AnnotatedGenericBeanDefinition> beanDefinitions) {
+    public Set<ConfigurationClass> parse(Set<BeanDefinitionHolder> beanDefinitions) {
         Set<ConfigurationClass> result = new LinkedHashSet<>();
-        for (AnnotatedGenericBeanDefinition beanDefinition : beanDefinitions) {
-            AnnotationMetadata metadata = beanDefinition.getMetadata();
-            Class<?> beanClass = beanDefinition.getBeanClass();
-            Set<String> types = metadata.getAnnotationTypes();
-            if (types.contains("org.simpleframework.context.annotation.Configuration")) {
-                ConfigurationClass configurationClass = new ConfigurationClass(metadata);
-                // 获取 @Bean methods
-                Method[] methods = beanClass.getMethods();
-                getBeanMethod(methods).forEach(configurationClass::addBeanMethod);
-                result.add(configurationClass);
+        for (BeanDefinitionHolder holder : beanDefinitions) {
+            BeanDefinition bd = holder.getBeanDefinition();
+            if (bd instanceof AnnotatedBeanDefinition) {
+                parse(result, ((AnnotatedBeanDefinition) bd), holder.getBeanName());
             }
         }
         return result;
+    }
+
+    private void parse(Set<ConfigurationClass> result, AnnotatedBeanDefinition beanDefinition, String beanName) {
+        Class<?> beanClass;
+        try {
+            beanClass = Class.forName(beanDefinition.getBeanClassName());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(beanName + " No bean class specified on bean definition");
+        }
+        Set<String> types = beanDefinition.getMetadata().getAnnotationTypes();
+        if (types.contains("org.simpleframework.context.annotation.Configuration")) {
+            ConfigurationClass configurationClass = new ConfigurationClass(beanDefinition.getMetadata(), beanName);
+            // 获取 @Bean methods
+            Method[] methods = beanClass.getDeclaredMethods();
+            getBeanMethod(methods).forEach(configurationClass::addBeanMethod);
+            result.add(configurationClass);
+        }
     }
 
     private Set<Method> getBeanMethod(Method[] methods) {

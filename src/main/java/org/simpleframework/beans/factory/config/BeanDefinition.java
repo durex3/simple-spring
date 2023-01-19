@@ -105,4 +105,32 @@ public interface BeanDefinition {
      * @return 销毁方法名
      */
     String getDestroyMethodName();
+
+    /**
+     * <h2>设置工厂 Bean 名称</h2>
+     *
+     * @param factoryBeanName Bean 名称
+     */
+    void setFactoryBeanName(String factoryBeanName);
+
+    /**
+     * <h2>返回工厂 Bean 名称</h2>
+     *
+     * @return bean 名称
+     */
+    String getFactoryBeanName();
+
+    /**
+     * <h2>设置工厂方法名称</h2>
+     *
+     * @param factoryMethodName 工厂方法名称
+     */
+    void setFactoryMethodName(String factoryMethodName);
+
+    /**
+     * <h2>返回工厂方法</h2>
+     *
+     * @return 工厂方法名称
+     */
+    String getFactoryMethodName();
 }

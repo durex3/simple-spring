@@ -7,6 +7,7 @@ import org.simpleframework.beans.PropertyValues;
 import org.simpleframework.beans.factory.BeanCreationException;
 import org.simpleframework.beans.factory.DisposableBean;
 import org.simpleframework.beans.factory.InitializingBean;
+import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
 import org.simpleframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.BeanReference;
@@ -206,14 +207,36 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object createBeanInstance(String beanName, RootBeanDefinition mbd, Object... args) {
+        if (mbd.getFactoryMethodName() != null) {
+            return instantiateUsingFactoryMethod(beanName, mbd, args);
+        }
         Class<?> beanClass = mbd.getBeanClass();
         Constructor<?>[] declaredConstructors = beanClass.getDeclaredConstructors();
         if (declaredConstructors.length == 0) {
             throw new BeansException(beanName + " No default constructor found");
         }
-        Constructor<?> constructorToUse = Arrays.stream(declaredConstructors).filter(ctor -> (args == null && ctor.getParameterCount() == 0) || (args != null && ctor.getParameterTypes().length == args.length)).findFirst().orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
+        Constructor<?> constructorToUse = Arrays.stream(declaredConstructors)
+                .filter(ctor -> (args == null && ctor.getParameterCount() == 0) || (args != null && ctor.getParameterTypes().length == args.length))
+                .findFirst()
+                .orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
 
         return instantiationStrategy.instantiate(mbd, beanName, constructorToUse, args);
+    }
+
+    protected Object instantiateUsingFactoryMethod(String beanName, RootBeanDefinition mbd, Object[] args) {
+        Object factoryBean = this.getBean(mbd.getFactoryBeanName());
+        Method[] methods = factoryBean.getClass().getDeclaredMethods();
+        Method factoryMethod = null;
+        for (Method method : methods) {
+            if (mbd.getFactoryMethodName().equals(method.getName()) && (args == null || args.length == method.getParameterCount())) {
+                factoryMethod = method;
+                break;
+            }
+        }
+        if (factoryMethod == null) {
+            throw new NoSuchBeanDefinitionException(beanName + " no such method " + mbd.getFactoryMethodName());
+        }
+        return instantiationStrategy.instantiate(mbd, beanName, factoryBean, factoryMethod, args);
     }
 
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {

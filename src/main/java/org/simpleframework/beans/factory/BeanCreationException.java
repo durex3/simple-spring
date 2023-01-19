@@ -12,4 +12,8 @@ public class BeanCreationException extends BeansException {
     public BeanCreationException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public BeanCreationException(String message) {
+        super(message);
+    }
 }

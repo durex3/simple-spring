@@ -14,6 +14,6 @@ public class UserConfig {
 
     @Bean(value = "user", initMethod = "init", destroyMethod = "close")
     public User getUser() {
-        return new User();
+        return new User("durex3");
     }
 }

@@ -26,6 +26,10 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 
     private String destroyMethodName;
 
+    private String factoryBeanName;
+
+    private String factoryMethodName;
+
     protected AbstractBeanDefinition() {
 
     }
@@ -45,6 +49,8 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
         }
         setInitMethodName(original.getInitMethodName());
         setDestroyMethodName(original.getDestroyMethodName());
+        setFactoryBeanName(original.getFactoryBeanName());
+        setFactoryMethodName(original.getFactoryMethodName());
     }
 
     /**
@@ -125,6 +131,26 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     @Override
     public String getDestroyMethodName() {
         return this.destroyMethodName;
+    }
+
+    @Override
+    public void setFactoryBeanName(String factoryBeanName) {
+        this.factoryBeanName = factoryBeanName;
+    }
+
+    @Override
+    public String getFactoryBeanName() {
+        return this.factoryBeanName;
+    }
+
+    @Override
+    public void setFactoryMethodName(String factoryMethodName) {
+        this.factoryMethodName = factoryMethodName;
+    }
+
+    @Override
+    public String getFactoryMethodName() {
+        return this.factoryMethodName;
     }
 
     public void setPropertyValues(MutablePropertyValues propertyValues) {

@@ -34,11 +34,11 @@ public class ConfigurationClassBeanDefinitionReader {
      */
     private void loadBeanDefinitionsForConfigurationClass(ConfigurationClass configClass) {
         for (Method beanMethod : configClass.getBeanMethods()) {
-            loadBeanDefinitionsForBeanMethod(beanMethod);
+            loadBeanDefinitionsForBeanMethod(configClass, beanMethod);
         }
     }
 
-    private void loadBeanDefinitionsForBeanMethod(Method beanMethod) {
+    private void loadBeanDefinitionsForBeanMethod(ConfigurationClass configClass, Method beanMethod) {
         if (beanMethod.getReturnType() == Void.class) {
             throw new BeanDefinitionStoreException("@Bean method return type is void");
         }
@@ -49,6 +49,10 @@ public class ConfigurationClassBeanDefinitionReader {
         if (beanName.isEmpty()) {
             beanName = Introspector.decapitalize(beanMethod.getName());
         }
+
+        beanDef.setFactoryBeanName(configClass.getBeanName());
+        beanDef.setFactoryMethodName(beanMethod.getName());
+
         String initMethodName = bean.initMethod();
         if (StringUtils.isNotBlank(initMethodName)) {
             beanDef.setInitMethodName(initMethodName);

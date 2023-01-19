@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
  * @version 1.0
  * @since 1.0 2023-01-01 01:38:08
  */
-public class ByteBuddyInstantiationStrategy implements InstantiationStrategy {
+public class ByteBuddyInstantiationStrategy extends SimpleInstantiationStrategy {
 
     @Override
     public Object instantiate(RootBeanDefinition rd, String beanName, Constructor<?> ctor, Object... args) throws BeansException {

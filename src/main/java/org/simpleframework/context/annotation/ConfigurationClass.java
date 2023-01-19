@@ -16,11 +16,13 @@ import java.util.Set;
 public class ConfigurationClass {
 
     private final AnnotationMetadata metadata;
+    private final String beanName;
 
     private final Set<Method> beanMethods = new LinkedHashSet<>();
 
-    public ConfigurationClass(AnnotationMetadata metadata) {
+    public ConfigurationClass(AnnotationMetadata metadata, String beanName) {
         this.metadata = metadata;
+        this.beanName = beanName;
     }
 
     public Set<Method> getBeanMethods() {
@@ -33,5 +35,9 @@ public class ConfigurationClass {
 
     public void addBeanMethod(Method method) {
         this.beanMethods.add(method);
+    }
+
+    public String getBeanName() {
+        return beanName;
     }
 }
