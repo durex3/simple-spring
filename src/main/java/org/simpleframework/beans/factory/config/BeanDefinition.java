@@ -77,4 +77,32 @@ public interface BeanDefinition {
     default boolean hasPropertyValues() {
         return !getPropertyValues().isEmpty();
     }
+
+    /**
+     * <h2>设置初始化方法</h2>
+     *
+     * @param initMethodName 初始化方法名
+     */
+    void setInitMethodName(String initMethodName);
+
+    /**
+     * <h2>获取初始化方法</h2>
+     *
+     * @return 初始化方法名
+     */
+    String getInitMethodName();
+
+    /**
+     * <h2>设置销毁方法</h2>
+     *
+     * @param destroyMethodName 销毁方法名
+     */
+    void setDestroyMethodName(String destroyMethodName);
+
+    /**
+     * <h2>获取销毁方法</h2>
+     *
+     * @return 销毁方法名
+     */
+    String getDestroyMethodName();
 }

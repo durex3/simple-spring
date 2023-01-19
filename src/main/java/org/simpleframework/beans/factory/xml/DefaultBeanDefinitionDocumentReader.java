@@ -28,6 +28,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
     public static final String PROPERTY_ELEMENT = "property";
     public static final String REF_ATTRIBUTE = "ref";
     public static final String VALUE_ATTRIBUTE = "value";
+    public static final String INIT_METHOD_ATTRIBUTE = "init-method";
+    public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
+
 
     @Override
     public void registerBeanDefinitions(Document doc, XmlReaderContext context) throws BeanDefinitionStoreException {
@@ -49,10 +52,22 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
                 }
                 BeanDefinition definition = new RootBeanDefinition(clazz);
                 parseProperty(bean, definition);
+                parseMethod(bean, definition);
                 context.getRegistry().registerBeanDefinition(beanName, definition);
             } catch (ClassNotFoundException e) {
                 throw new BeanDefinitionStoreException("Failed to load class with " + className);
             }
+        }
+    }
+
+    private static void parseMethod(Element bean, BeanDefinition definition) {
+        if (bean.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
+            String initMethodName = bean.getAttribute(INIT_METHOD_ATTRIBUTE);
+            definition.setInitMethodName(initMethodName);
+        }
+        if (bean.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
+            String destroyMethodName = bean.getAttribute(DESTROY_METHOD_ATTRIBUTE);
+            definition.setDestroyMethodName(destroyMethodName);
         }
     }
 

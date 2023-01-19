@@ -14,4 +14,9 @@ public interface ConfigurableBeanFactory extends SingletonBeanRegistry, BeanFact
     String SCOPE_PROTOTYPE = "prototype";
 
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
+
+    /**
+     * <h2>销毁 bean 实例</h2>
+     */
+    void destroySingletons();
 }

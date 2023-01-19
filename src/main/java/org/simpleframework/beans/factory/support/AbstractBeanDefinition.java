@@ -22,6 +22,10 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 
     private Boolean lazyInit;
 
+    private String initMethodName;
+
+    private String destroyMethodName;
+
     protected AbstractBeanDefinition() {
 
     }
@@ -34,13 +38,13 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
         if (originalAd.hasBeanClass()) {
             setBeanClass(originalAd.getBeanClass());
         }
-        if (lazyInit != null) {
-            setLazyInit(original.isLazyInit());
-        }
+        setLazyInit(original.isLazyInit());
 
         if (original.hasPropertyValues()) {
             setPropertyValues(new MutablePropertyValues(original.getPropertyValues()));
         }
+        setInitMethodName(original.getInitMethodName());
+        setDestroyMethodName(original.getDestroyMethodName());
     }
 
     /**
@@ -101,6 +105,26 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
             this.propertyValues = new MutablePropertyValues();
         }
         return this.propertyValues;
+    }
+
+    @Override
+    public void setInitMethodName(String initMethodName) {
+        this.initMethodName = initMethodName;
+    }
+
+    @Override
+    public String getInitMethodName() {
+        return this.initMethodName;
+    }
+
+    @Override
+    public void setDestroyMethodName(String destroyMethodName) {
+        this.destroyMethodName = destroyMethodName;
+    }
+
+    @Override
+    public String getDestroyMethodName() {
+        return this.destroyMethodName;
     }
 
     public void setPropertyValues(MutablePropertyValues propertyValues) {

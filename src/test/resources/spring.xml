@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <beans>
-    <bean name="userDao" class="org.simpleframework.dao.UserDao"/>
-    <bean id="userService" class="org.simpleframework.service.UserService">
+    <bean name="userDao" class="com.durex.dao.UserDao"/>
+    <bean id="userService" class="com.durex.service.UserService">
         <property name="name" value="durex3"/>
         <property name="userDao" ref="userDao"/>
     </bean>
-    <bean name="myBeanFactoryPostProcessor" class="org.simpleframework.conig.MyBeanFactoryPostProcessor"/>
-    <bean name="myBeanFactoryPostProcessor2" class="org.simpleframework.conig.MyBeanFactoryPostProcessor2"/>
-    <bean name="myBeanPostProcessor" class="org.simpleframework.conig.MyBeanPostProcessor"/>
-    <bean name="myBeanPostProcessor2" class="org.simpleframework.conig.MyBeanPostProcessor2"/>
+    <bean name="myBeanFactoryPostProcessor" class="com.durex.config.MyBeanFactoryPostProcessor"/>
+    <bean name="myBeanFactoryPostProcessor2" class="com.durex.config.MyBeanFactoryPostProcessor2"/>
+    <bean name="myBeanPostProcessor" class="com.durex.config.MyBeanPostProcessor"/>
+    <bean name="myBeanPostProcessor2" class="com.durex.config.MyBeanPostProcessor2"/>
     <bean name="myInstantiationAwareBeanPostProcessor"
-          class="org.simpleframework.conig.MyInstantiationAwareBeanPostProcessor"/>
+          class="com.durex.config.MyInstantiationAwareBeanPostProcessor"/>
     <bean name="myInstantiationAwareBeanPostProcessor2"
-          class="org.simpleframework.conig.MyInstantiationAwareBeanPostProcessor2"/>
+          class="com.durex.config.MyInstantiationAwareBeanPostProcessor2"/>
+
+    <bean name="user" class="com.durex.component.User" init-method="init" destroy-method="close"/>
 </beans>

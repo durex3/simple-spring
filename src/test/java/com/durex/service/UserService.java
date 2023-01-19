@@ -1,6 +1,6 @@
-package org.simpleframework.service;
+package com.durex.service;
 
-import org.simpleframework.dao.UserDao;
+import com.durex.dao.UserDao;
 import org.simpleframework.stereotype.Service;
 
 /**

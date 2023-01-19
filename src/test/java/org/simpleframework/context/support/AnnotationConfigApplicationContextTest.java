@@ -1,11 +1,12 @@
 package org.simpleframework.context.support;
 
+import com.durex.component.User;
+import com.durex.config.MyBeanFactoryPostProcessor;
+import com.durex.config.MyBeanPostProcessor;
+import com.durex.config.MyInstantiationAwareBeanPostProcessor;
+import com.durex.dao.UserDao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.simpleframework.conig.MyBeanFactoryPostProcessor;
-import org.simpleframework.conig.MyBeanPostProcessor;
-import org.simpleframework.conig.MyInstantiationAwareBeanPostProcessor;
-import org.simpleframework.dao.UserDao;
 
 /**
  * @author liugelong
@@ -18,7 +19,7 @@ class AnnotationConfigApplicationContextTest {
     @Test
     void testAnnotationConfigApplicationContextByScan() {
         // 1.创建 applicationContext
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("org.simpleframework");
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex");
         // 2.获取 bean
         UserDao userDao = (UserDao) applicationContext.getBean("userDao");
         Assertions.assertNotNull(userDao);
@@ -38,4 +39,13 @@ class AnnotationConfigApplicationContextTest {
         Assertions.assertNotNull(userDao);
     }
 
+    @Test
+    void testInitMethodAndDestroyMethod() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.config");
+        User user = (User) applicationContext.getBean("user");
+        Assertions.assertNotNull(user);
+        // 3.关闭容器
+        applicationContext.registerShutdownHook();
+    }
 }

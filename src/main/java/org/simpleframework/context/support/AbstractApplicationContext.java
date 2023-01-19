@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <h1>{@link org.simpleframework.context.ApplicationContext} 接口的抽象实现。</h1>
@@ -32,6 +33,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     private String id = ObjectUtils.identityToString(this);
     private final ResourcePatternResolver resourcePatternResolver;
     private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
+    private final Object startupShutdownMonitor = new Object();
+    private final AtomicBoolean active = new AtomicBoolean();
+    private final AtomicBoolean closed = new AtomicBoolean();
+    private Thread shutdownHook;
 
     protected AbstractApplicationContext() {
         this.resourcePatternResolver = getResourcePatternResolver();
@@ -79,14 +84,46 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void refresh() throws BeansException, IllegalStateException {
-        // 创建 BeanFactory
-        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
-        // 执行 BeanFactory 的后置处理器
-        invokeBeanFactoryPostProcessors(beanFactory);
-        // 注册 Bean 的后置处理器
-        registerBeanPostProcessors(beanFactory);
-        // 实例化所有剩余（非惰性初始化）单例
-        finishBeanFactoryInitialization(beanFactory);
+        synchronized (this.startupShutdownMonitor) {
+            prepareRefresh();
+            // 创建 BeanFactory
+            ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+            // 执行 BeanFactory 的后置处理器
+            invokeBeanFactoryPostProcessors(beanFactory);
+            // 注册 Bean 的后置处理器
+            registerBeanPostProcessors(beanFactory);
+            // 实例化所有剩余（非惰性初始化）单例
+            finishBeanFactoryInitialization(beanFactory);
+        }
+    }
+
+    @Override
+    public void close() {
+        synchronized (this.startupShutdownMonitor) {
+            doClose();
+            if (this.shutdownHook != null) {
+                try {
+                    Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
+                } catch (IllegalStateException ex) {
+                    // jvm 已经关闭
+                }
+            }
+        }
+    }
+
+    @Override
+    public void registerShutdownHook() {
+        if (this.shutdownHook == null) {
+            this.shutdownHook = new Thread("SimpleSpringContextShutdownHook") {
+                @Override
+                public void run() {
+                    synchronized (startupShutdownMonitor) {
+                        doClose();
+                    }
+                }
+            };
+            Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        }
     }
 
     @Override
@@ -106,6 +143,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
         return this.beanFactoryPostProcessors;
+    }
+
+    protected void prepareRefresh() {
+        this.closed.set(false);
+        this.active.set(true);
     }
 
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
@@ -146,6 +188,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
         Map<String, BeanPostProcessor> postProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
         registerBeanPostProcessors(beanFactory, postProcessorMap.values());
+    }
+
+    private void doClose() {
+        if (this.active.get() && this.closed.compareAndSet(false, true)) {
+            destroyBeans();
+            this.active.set(false);
+        }
+    }
+
+    protected void destroyBeans() {
+        getBeanFactory().destroySingletons();
     }
 
     public abstract ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;

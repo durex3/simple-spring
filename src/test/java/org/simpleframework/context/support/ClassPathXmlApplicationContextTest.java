@@ -1,8 +1,9 @@
 package org.simpleframework.context.support;
 
+import com.durex.component.User;
+import com.durex.dao.UserDao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.simpleframework.dao.UserDao;
 
 /**
  * @author liugelong
@@ -18,5 +19,16 @@ class ClassPathXmlApplicationContextTest {
         // 2.获取 bean
         UserDao userDao = (UserDao) applicationContext.getBean("userDao");
         Assertions.assertNotNull(userDao);
+    }
+
+    @Test
+    void testInitMethodAndDestroyMethod() {
+        // 1.创建 applicationContext
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        // 2.获取 bean
+        User user = (User) applicationContext.getBean("user");
+        Assertions.assertNotNull(user);
+        // 3.关闭容器
+        applicationContext.registerShutdownHook();
     }
 }

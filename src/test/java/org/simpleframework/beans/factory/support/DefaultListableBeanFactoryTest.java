@@ -6,8 +6,8 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.RuntimeBeanReference;
 import org.simpleframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.simpleframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.simpleframework.dao.UserDao;
-import org.simpleframework.service.UserService;
+import com.durex.dao.UserDao;
+import com.durex.service.UserService;
 
 /**
  * @author liugelong
@@ -72,7 +72,7 @@ class DefaultListableBeanFactoryTest {
 
         // 2.初始化 Scanner
         ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(beanFactory);
-        int count = scanner.scan("org.simpleframework");
+        int count = scanner.scan("com.durex");
         Assertions.assertEquals(2, count);
 
         // 3.获取 bean

@@ -1,4 +1,4 @@
-package org.simpleframework.dao;
+package com.durex.dao;
 
 import org.simpleframework.stereotype.Repository;
 

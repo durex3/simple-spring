@@ -1,5 +1,6 @@
 package org.simpleframework.beans.factory.support;
 
+import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 
 /**
@@ -26,4 +27,8 @@ public interface BeanDefinitionRegistry {
      * @return 数量
      */
     int getBeanDefinitionCount();
+
+    BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
+
+    String[] getBeanDefinitionNames();
 }

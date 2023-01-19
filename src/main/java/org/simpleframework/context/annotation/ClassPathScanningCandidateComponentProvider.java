@@ -12,6 +12,7 @@ import org.simpleframework.stereotype.Component;
 import org.simpleframework.stereotype.Controller;
 import org.simpleframework.stereotype.Repository;
 import org.simpleframework.stereotype.Service;
+import org.simpleframework.util.AnnotationUtils;
 import org.simpleframework.util.ClassUtils;
 
 import java.io.IOException;
@@ -64,11 +65,9 @@ public class ClassPathScanningCandidateComponentProvider {
             for (Resource resource : resources) {
                 URL url = resource.getURL();
                 Class<?> beanClass = loadClass(url, basePackage);
-                for (Class<? extends Annotation> annotation : includeFilters) {
-                    if (beanClass.isAnnotationPresent(annotation)) {
-                        AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
-                        candidates.add(abd);
-                    }
+                if (AnnotationUtils.findAnnotation(beanClass, Component.class) != null) {
+                    AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+                    candidates.add(abd);
                 }
             }
         } catch (IOException e) {

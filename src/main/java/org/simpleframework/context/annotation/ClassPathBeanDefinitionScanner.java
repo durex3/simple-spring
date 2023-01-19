@@ -3,6 +3,7 @@ package org.simpleframework.context.annotation;
 import org.simpleframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
+import org.simpleframework.beans.factory.support.RootBeanDefinition;
 import org.simpleframework.core.type.AnnotationMetadata;
 import org.simpleframework.util.ClassUtils;
 
@@ -28,7 +29,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
     public int scan(String... basePackages) {
         int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
         doScan(basePackages);
+        registerAnnotationConfigProcessors(registry);
         return (this.registry.getBeanDefinitionCount() - beanCountAtScanStart);
+    }
+
+    protected void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
+        RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+        registry.registerBeanDefinition(def.getBeanClassName(), def);
     }
 
     protected void doScan(String... basePackages) {
@@ -49,13 +56,11 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
             String beanName = null;
             for (String type : types) {
-                if (isStereotypeWithNameValue(type)) {
-                    Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(type);
-                    beanName = annotationAttributes.get("value").toString();
-                    if (beanName.isEmpty()) {
-                        String shortClassName = ClassUtils.getShortName(annotatedDef.getBeanClassName());
-                        beanName = Introspector.decapitalize(shortClassName);
-                    }
+                Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(type);
+                beanName = annotationAttributes.get("value").toString();
+                if (beanName.isEmpty()) {
+                    String shortClassName = ClassUtils.getShortName(annotatedDef.getBeanClassName());
+                    beanName = Introspector.decapitalize(shortClassName);
                 }
             }
             return beanName;

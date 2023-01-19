@@ -1,4 +1,4 @@
-package org.simpleframework.conig;
+package com.durex.config;
 
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;

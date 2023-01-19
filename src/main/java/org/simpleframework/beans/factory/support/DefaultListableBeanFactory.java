@@ -2,6 +2,7 @@ package org.simpleframework.beans.factory.support;
 
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.BeanDefinitionStoreException;
+import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.ConfigurableListableBeanFactory;
 
@@ -25,7 +26,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     public BeanDefinition getBeanDefinition(String beanName) {
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
         if (beanDefinition == null) {
-            throw new BeansException("No bean named '" + beanName + "' is defined");
+            throw new NoSuchBeanDefinitionException("No bean named '" + beanName + "' is defined");
         }
         return beanDefinition;
     }
@@ -80,5 +81,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             }
         });
         return beanMap;
+    }
+
+    @Override
+    public void destroySingletons() {
+        super.destroySingletons();
     }
 }

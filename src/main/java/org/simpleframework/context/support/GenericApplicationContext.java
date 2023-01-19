@@ -1,6 +1,7 @@
 package org.simpleframework.context.support;
 
 import org.simpleframework.beans.BeansException;
+import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
@@ -54,6 +55,11 @@ public abstract class GenericApplicationContext extends AbstractApplicationConte
     @Override
     protected void refreshBeanFactory() throws BeansException, IllegalStateException {
 
+    }
+
+    @Override
+    public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
+        return this.beanFactory.getBeanDefinition(beanName);
     }
 
     public void setResourceLoader(ResourceLoader resourceLoader) {

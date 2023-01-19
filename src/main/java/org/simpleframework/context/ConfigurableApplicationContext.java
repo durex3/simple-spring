@@ -25,6 +25,16 @@ public interface ConfigurableApplicationContext extends ApplicationContext {
     void refresh() throws BeansException, IllegalStateException;
 
     /**
+     * <h2>关闭容器</h2>
+     */
+    void close();
+
+    /**
+     * <h2>向 JVM 运行时注册一个关闭钩子，在 JVM 关闭时关闭此上下文，除非当时它已经关闭</h2>
+     */
+    void registerShutdownHook();
+
+    /**
      * <h2>添加后置处理器</h2>
      *
      * @param postProcessor BeanFactory 后置处理器

@@ -1,16 +1,21 @@
 package org.simpleframework.beans.factory.support;
 
+import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.MutablePropertyValues;
 import org.simpleframework.beans.PropertyValues;
 import org.simpleframework.beans.factory.BeanCreationException;
+import org.simpleframework.beans.factory.DisposableBean;
+import org.simpleframework.beans.factory.InitializingBean;
 import org.simpleframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.BeanReference;
 import org.simpleframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import org.simpleframework.util.ClassUtils;
 import org.simpleframework.util.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
@@ -61,6 +66,36 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             }
         }
         return null;
+    }
+
+    protected void invokeInitMethods(String beanName, Object bean, RootBeanDefinition mbd) throws Exception {
+        boolean isInitializingBean = (bean instanceof InitializingBean);
+
+        if (isInitializingBean) {
+            ((InitializingBean) bean).afterPropertiesSet();
+        }
+
+        if (mbd != null && bean.getClass() != null) {
+            String initMethodName = mbd.getInitMethodName();
+            if (StringUtils.isNotBlank(initMethodName) && !(isInitializingBean && "afterPropertiesSet".equals(initMethodName))) {
+                invokeCustomInitMethod(beanName, bean, mbd);
+            }
+        }
+    }
+
+    protected void invokeCustomInitMethod(String beanName, Object bean, RootBeanDefinition mbd) {
+        String initMethodName = mbd.getInitMethodName();
+        if (StringUtils.isBlank(initMethodName)) {
+            throw new IllegalStateException("No init method set");
+        }
+
+        Method initMethod = ClassUtils.getMethodIfAvailable(bean.getClass(), initMethodName);
+        if (initMethod == null) {
+            throw new BeansException("Could not find an init method named '" + initMethodName + "' on bean with name '" + beanName + "'");
+        }
+
+        ReflectionUtils.makeAccessible(initMethod);
+        ReflectionUtils.invokeMethod(initMethod, bean);
     }
 
     @Override
@@ -153,12 +188,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         try {
             // 执行初始化方法
-            // invokeInitMethods(beanName, wrappedBean, mbd);
-        } catch (Throwable ex) {
-            throw new BeanCreationException(beanName + "Invocation of init method failed", ex);
+            invokeInitMethods(beanName, wrappedBean, mbd);
+        } catch (Exception ex) {
+            throw new BeanCreationException(beanName + " Invocation of init method failed", ex);
         }
 
         wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+
+        try {
+            // 注册销毁方法
+            registerDisposableBeanIfNecessary(beanName, bean, mbd);
+        } catch (BeansException ex) {
+            throw new BeansException(beanName + " register disposable", ex);
+        }
 
         return wrappedBean;
     }
@@ -172,5 +214,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Constructor<?> constructorToUse = Arrays.stream(declaredConstructors).filter(ctor -> (args == null && ctor.getParameterCount() == 0) || (args != null && ctor.getParameterTypes().length == args.length)).findFirst().orElseThrow(() -> new BeansException(beanName + " Illegal arguments for constructor"));
 
         return instantiationStrategy.instantiate(mbd, beanName, constructorToUse, args);
+    }
+
+    protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
+        if (mbd.isSingleton() && bean instanceof DisposableBean) {
+            registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, mbd));
+        }
     }
 }
