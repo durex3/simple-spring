@@ -1,5 +1,6 @@
 package org.simpleframework.context.support;
 
+import com.durex.aware.Person;
 import com.durex.component.User;
 import com.durex.config.MyBeanFactoryPostProcessor;
 import com.durex.config.MyBeanPostProcessor;
@@ -48,5 +49,13 @@ class AnnotationConfigApplicationContextTest {
         Assertions.assertEquals("durex3", user.getName());
         // 3.关闭容器
         applicationContext.registerShutdownHook();
+    }
+
+    @Test
+    void testAware() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.aware");
+        Person person = (Person) applicationContext.getBean("person");
+        Assertions.assertNotNull(person);
     }
 }

@@ -88,6 +88,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
             prepareRefresh();
             // 创建 BeanFactory
             ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+            // 准备 Bean 工厂以在此上下文中使用
+            prepareBeanFactory(beanFactory);
             // 执行 BeanFactory 的后置处理器
             invokeBeanFactoryPostProcessors(beanFactory);
             // 注册 Bean 的后置处理器
@@ -163,6 +165,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         return getBeanFactory();
     }
 
+    protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+        beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+    }
+
     protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
         List<BeanFactoryPostProcessor> postProcessors = getBeanFactoryPostProcessors();
         Map<String, BeanFactoryPostProcessor> postProcessorMap = getBeansOfType(BeanFactoryPostProcessor.class);
@@ -190,7 +196,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         registerBeanPostProcessors(beanFactory, postProcessorMap.values());
     }
 
-    private void doClose() {
+    protected void doClose() {
         if (this.active.get() && this.closed.compareAndSet(false, true)) {
             destroyBeans();
             this.active.set(false);

@@ -1,5 +1,6 @@
 package org.simpleframework.context.support;
 
+import com.durex.aware.Person;
 import com.durex.component.User;
 import com.durex.dao.UserDao;
 import org.junit.jupiter.api.Assertions;
@@ -30,5 +31,13 @@ class ClassPathXmlApplicationContextTest {
         Assertions.assertNotNull(user);
         // 3.关闭容器
         applicationContext.registerShutdownHook();
+    }
+
+    @Test
+    void testAware() {
+        // 1.创建 applicationContext
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-aware.xml");
+        Person person = (Person) applicationContext.getBean("person");
+        Assertions.assertNotNull(person);
     }
 }

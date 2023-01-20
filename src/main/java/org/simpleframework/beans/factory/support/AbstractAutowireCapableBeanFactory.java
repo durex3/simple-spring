@@ -4,10 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.MutablePropertyValues;
 import org.simpleframework.beans.PropertyValues;
-import org.simpleframework.beans.factory.BeanCreationException;
-import org.simpleframework.beans.factory.DisposableBean;
-import org.simpleframework.beans.factory.InitializingBean;
-import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
+import org.simpleframework.beans.factory.*;
 import org.simpleframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.BeanReference;
@@ -183,6 +180,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object initializeBean(String beanName, Object bean, RootBeanDefinition mbd) {
+        invokeAwareMethods(beanName, bean);
+
         Object wrappedBean = bean;
 
         wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
@@ -242,6 +241,23 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
         if (mbd.isSingleton() && bean instanceof DisposableBean) {
             registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, mbd));
+        }
+    }
+
+    private void invokeAwareMethods(String beanName, Object bean) {
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanNameAware) {
+                ((BeanNameAware) bean).setBeanName(beanName);
+            }
+            if (bean instanceof BeanClassLoaderAware) {
+                ClassLoader bcl = getBeanClassLoader();
+                if (bcl != null) {
+                    ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+                }
+            }
+            if (bean instanceof BeanFactoryAware) {
+                ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+            }
         }
     }
 }

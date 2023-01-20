@@ -5,6 +5,7 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.ConfigurableBeanFactory;
 import org.simpleframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import org.simpleframework.util.ClassUtils;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,6 +23,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
     private volatile boolean hasInstantiationAwareBeanPostProcessors;
+    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
     protected abstract BeanDefinition getBeanDefinition(String beanName);
 
@@ -47,6 +49,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             this.hasInstantiationAwareBeanPostProcessors = true;
         }
         this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public ClassLoader getBeanClassLoader() {
+        return this.beanClassLoader;
     }
 
     public List<BeanPostProcessor> getBeanPostProcessors() {
