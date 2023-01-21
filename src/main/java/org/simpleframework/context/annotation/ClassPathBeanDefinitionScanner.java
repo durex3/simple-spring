@@ -5,6 +5,7 @@ import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
 import org.simpleframework.beans.factory.support.RootBeanDefinition;
 import org.simpleframework.core.type.AnnotationMetadata;
+import org.simpleframework.util.AnnotationConfigUtils;
 import org.simpleframework.util.ClassUtils;
 
 import java.beans.Introspector;
@@ -45,7 +46,12 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
         for (String basePackage : basePackages) {
             Set<BeanDefinition> beanDefinitions = findCandidateComponents(basePackage);
-            beanDefinitions.forEach(bd -> this.registry.registerBeanDefinition(determineBeanNameFromAnnotation(bd), bd));
+            for (BeanDefinition bd : beanDefinitions) {
+                if (bd instanceof AnnotatedBeanDefinition) {
+                    AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) bd);
+                }
+                this.registry.registerBeanDefinition(determineBeanNameFromAnnotation(bd), bd);
+            }
         }
     }
 

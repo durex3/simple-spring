@@ -63,7 +63,13 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     protected Object doGetBean(String name, Object[] args) {
         BeanDefinition beanDefinition = getBeanDefinition(name);
         RootBeanDefinition rootBeanDefinition = getMergedBeanDefinition(beanDefinition);
-        return getSingleton(name, () -> createBean(name, rootBeanDefinition, args));
+        if (beanDefinition.isSingleton()) {
+            return getSingleton(name, () -> createBean(name, rootBeanDefinition, args));
+        } else if (beanDefinition.isPrototype()) {
+            return createBean(name, rootBeanDefinition, args);
+        } else {
+            throw new IllegalStateException("No Scope registered for scope name '" + beanDefinition.getScope() + "'");
+        }
     }
 
     protected RootBeanDefinition getMergedBeanDefinition(BeanDefinition bd) {

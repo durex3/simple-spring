@@ -106,6 +106,11 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     }
 
     @Override
+    public boolean isPrototype() {
+        return SCOPE_PROTOTYPE.equals(this.scope);
+    }
+
+    @Override
     public MutablePropertyValues getPropertyValues() {
         if (this.propertyValues == null) {
             this.propertyValues = new MutablePropertyValues();

@@ -1,7 +1,6 @@
 package org.simpleframework.util;
 
 import java.lang.annotation.Annotation;
-import java.util.Set;
 
 /**
  * @author liugelong

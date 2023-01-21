@@ -30,7 +30,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
     public static final String VALUE_ATTRIBUTE = "value";
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
-
+    public static final String SCOPE_ATTRIBUTE = "scope";
 
     @Override
     public void registerBeanDefinitions(Document doc, XmlReaderContext context) throws BeanDefinitionStoreException {
@@ -53,6 +53,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
                 BeanDefinition definition = new RootBeanDefinition(clazz);
                 parseProperty(bean, definition);
                 parseMethod(bean, definition);
+                if (bean.hasAttribute(SCOPE_ATTRIBUTE)) {
+                    definition.setScope(bean.getAttribute(SCOPE_ATTRIBUTE));
+                }
                 context.getRegistry().registerBeanDefinition(beanName, definition);
             } catch (ClassNotFoundException e) {
                 throw new BeanDefinitionStoreException("Failed to load class with " + className);

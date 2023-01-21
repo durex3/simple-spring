@@ -65,6 +65,13 @@ public interface BeanDefinition {
     boolean isSingleton();
 
     /**
+     * <h2>判断是否是多例</h2>
+     *
+     * @return true false
+     */
+    boolean isPrototype();
+
+    /**
      * <h2>获取 PropertyValues</h2>
      *
      * @return {@link MutablePropertyValues}

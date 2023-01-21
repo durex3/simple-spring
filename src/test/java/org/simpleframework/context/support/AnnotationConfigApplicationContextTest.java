@@ -6,6 +6,8 @@ import com.durex.config.MyBeanFactoryPostProcessor;
 import com.durex.config.MyBeanPostProcessor;
 import com.durex.config.MyInstantiationAwareBeanPostProcessor;
 import com.durex.dao.UserDao;
+import com.durex.scope.Cat;
+import com.durex.scope.Dog;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -57,5 +59,19 @@ class AnnotationConfigApplicationContextTest {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.aware");
         Person person = (Person) applicationContext.getBean("person");
         Assertions.assertNotNull(person);
+    }
+
+    @Test
+    void testScope() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.scope");
+        // 2.获取 bean
+        Cat cat1 = (Cat) applicationContext.getBean("cat");
+        Cat cat2 = (Cat) applicationContext.getBean("cat");
+        Assertions.assertEquals(cat1, cat2);
+
+        Dog dog1 = (Dog) applicationContext.getBean("dog");
+        Dog dog2 = (Dog) applicationContext.getBean("dog");
+        Assertions.assertNotEquals(dog1, dog2);
     }
 }

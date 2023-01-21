@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<beans>
+    <bean id="dog" class="com.durex.scope.Dog" scope="prototype"/>
+    <bean id="cat" class="com.durex.scope.Cat"/>
+</beans>

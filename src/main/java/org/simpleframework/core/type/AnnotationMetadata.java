@@ -1,5 +1,6 @@
 package org.simpleframework.core.type;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,4 +16,6 @@ public interface AnnotationMetadata {
     boolean hasAnnotation(String annotationName);
 
     Map<String, Object> getAnnotationAttributes(String annotationName);
+
+    Map<Class<? extends Annotation>, Map<String, Object>> getAnnotationAttributes();
 }

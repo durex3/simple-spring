@@ -52,6 +52,20 @@ public class SimpleAnnotationMetadata implements AnnotationMetadata {
         return new HashMap<>();
     }
 
+    @Override
+    public Map<Class<? extends Annotation>, Map<String, Object>> getAnnotationAttributes() {
+        Map<Class<? extends Annotation>, Map<String, Object>> result = new HashMap<>();
+        for (Annotation annotation : annotations) {
+            InvocationHandler handler = Proxy.getInvocationHandler(annotation);
+            result.put(
+                    annotation.annotationType(),
+                    (Map<String, Object>) ReflectionUtils.getFieldValue(handler, "memberValues")
+            );
+
+        }
+        return result;
+    }
+
     public Set<Annotation> getAnnotations() {
         return annotations;
     }
