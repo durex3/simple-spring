@@ -14,6 +14,4 @@
           class="com.durex.config.MyInstantiationAwareBeanPostProcessor"/>
     <bean name="myInstantiationAwareBeanPostProcessor2"
           class="com.durex.config.MyInstantiationAwareBeanPostProcessor2"/>
-
-    <bean name="user" class="com.durex.component.User" init-method="init" destroy-method="close"/>
 </beans>

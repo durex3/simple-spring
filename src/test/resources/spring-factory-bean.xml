@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<beans>
+    <bean id="dragon" class="com.durex.factorybean.DragonFactory"/>
+    <bean id="panda" class="com.durex.factorybean.PandaFactory"/>
+</beans>

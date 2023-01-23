@@ -27,6 +27,11 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         return singletonObjects.get(beanName);
     }
 
+    @Override
+    public boolean containsSingleton(String beanName) {
+        return this.singletonObjects.containsKey(beanName);
+    }
+
     public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
         if (beanName == null || beanName.isEmpty()) {
             throw new BeansException("Bean name must not be null");

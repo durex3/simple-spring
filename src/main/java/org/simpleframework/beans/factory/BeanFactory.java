@@ -11,6 +11,8 @@ import org.simpleframework.beans.BeansException;
  */
 public interface BeanFactory {
 
+    String FACTORY_BEAN_PREFIX = "&";
+
     /**
      * <h2>按名字获取 bean</h2>
      *

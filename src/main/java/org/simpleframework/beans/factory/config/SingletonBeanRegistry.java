@@ -16,4 +16,6 @@ public interface SingletonBeanRegistry {
      * @return bean
      */
     Object getSingleton(String beanName);
+
+    boolean containsSingleton(String beanName);
 }

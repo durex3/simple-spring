@@ -6,6 +6,10 @@ import com.durex.config.MyBeanFactoryPostProcessor;
 import com.durex.config.MyBeanPostProcessor;
 import com.durex.config.MyInstantiationAwareBeanPostProcessor;
 import com.durex.dao.UserDao;
+import com.durex.factorybean.Dragon;
+import com.durex.factorybean.DragonFactory;
+import com.durex.factorybean.Panda;
+import com.durex.factorybean.PandaFactory;
 import com.durex.scope.Cat;
 import com.durex.scope.Dog;
 import org.junit.jupiter.api.Assertions;
@@ -73,5 +77,31 @@ class AnnotationConfigApplicationContextTest {
         Dog dog1 = (Dog) applicationContext.getBean("dog");
         Dog dog2 = (Dog) applicationContext.getBean("dog");
         Assertions.assertNotEquals(dog1, dog2);
+    }
+
+    @Test
+    void testFactoryBean() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.factorybean");
+        // 2.获取 bean
+        Dragon dragon1 = (Dragon) applicationContext.getBean("dragon");
+        Dragon dragon2 = (Dragon) applicationContext.getBean("dragon");
+        Assertions.assertEquals(dragon1, dragon2);
+        // 3.获取 factory bean
+        DragonFactory dragonFactory = (DragonFactory) applicationContext.getBean("&dragon");
+        Assertions.assertNotNull(dragonFactory);
+    }
+
+    @Test
+    void testFactoryBeanByPrototype() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.factorybean");
+        // 2.获取 bean
+        Panda panda1 = (Panda) applicationContext.getBean("panda");
+        Panda panda2 = (Panda) applicationContext.getBean("panda");
+        Assertions.assertNotEquals(panda1, panda2);
+        // 3.获取 factory bean
+        PandaFactory pandaFactory = (PandaFactory) applicationContext.getBean("&panda");
+        Assertions.assertNotNull(pandaFactory);
     }
 }

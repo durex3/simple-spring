@@ -1,6 +1,8 @@
 package org.simpleframework.beans.factory.support;
 
 import org.simpleframework.beans.BeansException;
+import org.simpleframework.beans.factory.BeanFactory;
+import org.simpleframework.beans.factory.FactoryBean;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.ConfigurableBeanFactory;
@@ -19,11 +21,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version 1.0
  * @since 1.0 2022-12-31 12:35:34
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
     private volatile boolean hasInstantiationAwareBeanPostProcessors;
-    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+    private final ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
     protected abstract BeanDefinition getBeanDefinition(String beanName);
 
@@ -60,16 +62,33 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return this.beanPostProcessors;
     }
 
-    protected Object doGetBean(String name, Object[] args) {
-        BeanDefinition beanDefinition = getBeanDefinition(name);
-        RootBeanDefinition rootBeanDefinition = getMergedBeanDefinition(beanDefinition);
-        if (beanDefinition.isSingleton()) {
-            return getSingleton(name, () -> createBean(name, rootBeanDefinition, args));
-        } else if (beanDefinition.isPrototype()) {
-            return createBean(name, rootBeanDefinition, args);
+    protected <T> T doGetBean(String name, Object[] args) {
+        String beanName = transformedBeanName(name);
+        Object sharedInstance = getSingleton(beanName);
+        Object bean;
+        if (sharedInstance != null) {
+            bean = getObjectForBeanInstance(sharedInstance, name, beanName);
         } else {
-            throw new IllegalStateException("No Scope registered for scope name '" + beanDefinition.getScope() + "'");
+            BeanDefinition beanDefinition = getBeanDefinition(beanName);
+            RootBeanDefinition rootBeanDefinition = getMergedBeanDefinition(beanDefinition);
+            if (beanDefinition.isSingleton()) {
+                sharedInstance = getSingleton(beanName, () -> createBean(beanName, rootBeanDefinition, args));
+                bean = getObjectForBeanInstance(sharedInstance, name, beanName);
+            } else if (beanDefinition.isPrototype()) {
+                sharedInstance = createBean(beanName, rootBeanDefinition, args);
+                bean = getObjectForBeanInstance(sharedInstance, name, beanName);
+            } else {
+                throw new IllegalStateException("No Scope registered for scope name '" + beanDefinition.getScope() + "'");
+            }
         }
+        return (T) bean;
+    }
+
+    protected String transformedBeanName(String name) {
+        if (!name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
+            return name;
+        }
+        return name.substring(BeanFactory.FACTORY_BEAN_PREFIX.length());
     }
 
     protected RootBeanDefinition getMergedBeanDefinition(BeanDefinition bd) {
@@ -77,6 +96,28 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             return ((RootBeanDefinition) bd).cloneBeanDefinition();
         }
         return new RootBeanDefinition(bd);
+    }
+
+    private Object getObjectForBeanInstance(Object beanInstance, String name, String beanName) {
+        if (name != null && name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
+            if (!(beanInstance instanceof FactoryBean)) {
+                throw new BeansException("Bean named" + name + " is not factory bean");
+            }
+            return beanInstance;
+        }
+
+        if (!(beanInstance instanceof FactoryBean)) {
+            return beanInstance;
+        }
+
+        Object object = getCachedObjectForFactoryBean(beanName);
+
+        if (object == null) {
+            FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
+            object = getObjectFromFactoryBean(factory, beanName);
+        }
+
+        return object;
     }
 
     protected boolean hasInstantiationAwareBeanPostProcessors() {

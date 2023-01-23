@@ -10,7 +10,10 @@ import org.simpleframework.beans.factory.InitializingBean;
  */
 public class User implements InitializingBean, DisposableBean {
 
-    private final String name;
+    private String name;
+
+    public User() {
+    }
 
     public User(String name) {
         this.name = name;

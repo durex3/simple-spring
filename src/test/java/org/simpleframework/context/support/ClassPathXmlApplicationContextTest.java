@@ -3,6 +3,10 @@ package org.simpleframework.context.support;
 import com.durex.aware.Person;
 import com.durex.component.User;
 import com.durex.dao.UserDao;
+import com.durex.factorybean.Dragon;
+import com.durex.factorybean.DragonFactory;
+import com.durex.factorybean.Panda;
+import com.durex.factorybean.PandaFactory;
 import com.durex.scope.Cat;
 import com.durex.scope.Dog;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +31,7 @@ class ClassPathXmlApplicationContextTest {
     @Test
     void testInitMethodAndDestroyMethod() {
         // 1.创建 applicationContext
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-init-or-destroy.xml");
         // 2.获取 bean
         User user = (User) applicationContext.getBean("user");
         Assertions.assertNotNull(user);
@@ -55,5 +59,31 @@ class ClassPathXmlApplicationContextTest {
         Dog dog1 = (Dog) applicationContext.getBean("dog");
         Dog dog2 = (Dog) applicationContext.getBean("dog");
         Assertions.assertNotEquals(dog1, dog2);
+    }
+
+    @Test
+    void testFactoryBean() {
+        // 1.创建 applicationContext
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-factory-bean.xml");
+        // 2.获取 bean
+        Dragon dragon1 = (Dragon) applicationContext.getBean("dragon");
+        Dragon dragon2 = (Dragon) applicationContext.getBean("dragon");
+        Assertions.assertEquals(dragon1, dragon2);
+        // 3.获取 factory bean
+        DragonFactory dragonFactory = (DragonFactory) applicationContext.getBean("&dragon");
+        Assertions.assertNotNull(dragonFactory);
+    }
+
+    @Test
+    void testFactoryBeanByPrototype() {
+        // 1.创建 applicationContext
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring-factory-bean.xml");
+        // 2.获取 bean
+        Panda panda1 = (Panda) applicationContext.getBean("panda");
+        Panda panda2 = (Panda) applicationContext.getBean("panda");
+        Assertions.assertNotEquals(panda1, panda2);
+        // 3.获取 factory bean
+        PandaFactory pandaFactory = (PandaFactory) applicationContext.getBean("&panda");
+        Assertions.assertNotNull(pandaFactory);
     }
 }

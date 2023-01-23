@@ -21,9 +21,9 @@ public final class AnnotationConfigUtils {
     public static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd) {
         AnnotationMetadata metadata = abd.getMetadata();
         Map<Class<? extends Annotation>, Map<String, Object>> attributes = metadata.getAnnotationAttributes();
-        Object scopeValue = attributes.get(Scope.class).get("value");
-        if (Objects.nonNull(scopeValue)) {
-            abd.setScope(scopeValue.toString());
+        Map<String, Object> scopeValue = attributes.get(Scope.class);
+        if (Objects.nonNull(scopeValue) && scopeValue.get("value") != null) {
+            abd.setScope(scopeValue.get("value").toString());
         }
     }
 }
