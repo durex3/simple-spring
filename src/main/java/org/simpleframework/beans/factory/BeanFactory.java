@@ -29,4 +29,8 @@ public interface BeanFactory {
      * @return bean
      */
     Object getBean(String name, Object... args) throws BeansException;
+
+    Class<?> getType(String name) throws NoSuchBeanDefinitionException;
+
+    boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 }

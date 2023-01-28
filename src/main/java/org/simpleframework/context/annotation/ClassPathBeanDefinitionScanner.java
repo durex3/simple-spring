@@ -1,5 +1,6 @@
 package org.simpleframework.context.annotation;
 
+import org.simpleframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.simpleframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
@@ -35,8 +36,10 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
     }
 
     protected void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
-        RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
-        registry.registerBeanDefinition(def.getBeanClassName(), def);
+        RootBeanDefinition classPostProcessor = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+        registry.registerBeanDefinition(classPostProcessor.getBeanClassName(), classPostProcessor);
+        RootBeanDefinition proxyCreator = new RootBeanDefinition(AnnotationAwareAspectJAutoProxyCreator.class);
+        registry.registerBeanDefinition(proxyCreator.getBeanClassName(), proxyCreator);
     }
 
     protected void doScan(String... basePackages) {

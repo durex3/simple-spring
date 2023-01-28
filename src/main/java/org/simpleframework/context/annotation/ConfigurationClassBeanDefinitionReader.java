@@ -52,6 +52,7 @@ public class ConfigurationClassBeanDefinitionReader {
 
         beanDef.setFactoryBeanName(configClass.getBeanName());
         beanDef.setFactoryMethodName(beanMethod.getName());
+        beanDef.setResolvedFactoryMethod(beanMethod);
 
         String initMethodName = bean.initMethod();
         if (StringUtils.isNotBlank(initMethodName)) {

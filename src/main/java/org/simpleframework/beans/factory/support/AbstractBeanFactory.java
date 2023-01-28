@@ -3,6 +3,7 @@ package org.simpleframework.beans.factory.support;
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.BeanFactory;
 import org.simpleframework.beans.factory.FactoryBean;
+import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.ConfigurableBeanFactory;
@@ -58,8 +59,62 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return this.beanClassLoader;
     }
 
+    @Override
+    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+        String beanName = transformedBeanName(name);
+        Object beanInstance = getSingleton(beanName);
+        if (beanInstance != null && beanInstance.getClass() != null) {
+            if (beanInstance instanceof FactoryBean && !isFactoryDereference(name)) {
+                return ((FactoryBean<?>) beanInstance).getObjectType();
+            } else {
+                return beanInstance.getClass();
+            }
+        }
+        RootBeanDefinition rd = getMergedBeanDefinition(getBeanDefinition(beanName));
+        if (rd.getFactoryMethodName() != null) {
+            return rd.getResolvedFactoryMethod().getReturnType();
+        }
+        Class<?> beanClass = rd.getBeanClass();
+        return !isFactoryDereference(name) ? beanClass : null;
+    }
+
+    @Override
+    public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
+        String beanName = transformedBeanName(name);
+
+        Object beanInstance = getSingleton(beanName);
+        if (beanInstance != null) {
+            if (beanInstance instanceof FactoryBean) {
+                return (isFactoryDereference(name) || ((FactoryBean<?>) beanInstance).isSingleton());
+            } else {
+                return !isFactoryDereference(name);
+            }
+        }
+
+        RootBeanDefinition rd = getMergedBeanDefinition(getBeanDefinition(beanName));
+
+        if (rd.isSingleton()) {
+            Class<?> beanType = rd.getBeanClass();
+            if (beanType != null && FactoryBean.class.isAssignableFrom(beanType)) {
+                if (isFactoryDereference(name)) {
+                    return true;
+                }
+                FactoryBean<?> factoryBean = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
+                return factoryBean.isSingleton();
+            } else {
+                return !isFactoryDereference(name);
+            }
+        }
+
+        return false;
+    }
+
     public List<BeanPostProcessor> getBeanPostProcessors() {
         return this.beanPostProcessors;
+    }
+
+    public boolean isFactoryDereference(String name) {
+        return (name != null && name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX));
     }
 
     protected <T> T doGetBean(String name, Object[] args) {

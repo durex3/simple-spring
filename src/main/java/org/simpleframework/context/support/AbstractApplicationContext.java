@@ -2,6 +2,7 @@ package org.simpleframework.context.support;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.simpleframework.beans.BeansException;
+import org.simpleframework.beans.factory.NoSuchBeanDefinitionException;
 import org.simpleframework.beans.factory.config.BeanDefinitionRegistryPostProcessor;
 import org.simpleframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
@@ -143,6 +144,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         return getBeanFactory().getBeansOfType(type);
     }
 
+    @Override
+    public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
+        return getBeanFactory().isSingleton(name);
+    }
+
+    @Override
+    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+        return getBeanFactory().getType(name);
+    }
+
     public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
         return this.beanFactoryPostProcessors;
     }
@@ -172,7 +183,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
         List<BeanFactoryPostProcessor> postProcessors = getBeanFactoryPostProcessors();
         Map<String, BeanFactoryPostProcessor> postProcessorMap = getBeansOfType(BeanFactoryPostProcessor.class);
-        postProcessors.addAll(postProcessorMap.values());
+        if (postProcessorMap != null && postProcessorMap.size() > 0) {
+            postProcessors.addAll(postProcessorMap.values());
+        }
 
         if (beanFactory instanceof BeanDefinitionRegistry) {
             List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();

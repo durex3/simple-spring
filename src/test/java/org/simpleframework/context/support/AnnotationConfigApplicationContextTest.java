@@ -1,5 +1,6 @@
 package org.simpleframework.context.support;
 
+import com.durex.aop.LoginService;
 import com.durex.aware.Person;
 import com.durex.component.User;
 import com.durex.config.MyBeanFactoryPostProcessor;
@@ -104,4 +105,15 @@ class AnnotationConfigApplicationContextTest {
         PandaFactory pandaFactory = (PandaFactory) applicationContext.getBean("&panda");
         Assertions.assertNotNull(pandaFactory);
     }
+
+    @Test
+    void testAop() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.aop");
+        // 2.获取 bean
+        LoginService loginService = (LoginService) applicationContext.getBean("loginService");
+        loginService.login("durex3", "123456");
+    }
+
+
 }
