@@ -2,6 +2,7 @@ package com.durex.aop;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.simpleframework.context.annotation.EnableAspectJAutoProxy;
 import org.simpleframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.Arrays;
  * @version 1.0
  * @since 1.0 2023-01-27 21:56:16
  */
+@EnableAspectJAutoProxy
 @Aspect
 @Component
 public class AspectConfig {

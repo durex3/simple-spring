@@ -3,7 +3,9 @@ package org.simpleframework.context.annotation;
 import org.simpleframework.core.type.AnnotationMetadata;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,6 +21,8 @@ public class ConfigurationClass {
     private final String beanName;
 
     private final Set<Method> beanMethods = new LinkedHashSet<>();
+
+    private final Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> importBeanDefinitionRegistrars = new LinkedHashMap<>();
 
     public ConfigurationClass(AnnotationMetadata metadata, String beanName) {
         this.metadata = metadata;
@@ -39,5 +43,13 @@ public class ConfigurationClass {
 
     public String getBeanName() {
         return beanName;
+    }
+
+    public void addImportBeanDefinitionRegistrar(ImportBeanDefinitionRegistrar registrar, AnnotationMetadata importingClassMetadata) {
+        this.importBeanDefinitionRegistrars.put(registrar, importingClassMetadata);
+    }
+
+    public Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> getImportBeanDefinitionRegistrars() {
+        return this.importBeanDefinitionRegistrars;
     }
 }

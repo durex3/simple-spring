@@ -4,9 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.beans.factory.BeanDefinitionStoreException;
 import org.simpleframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
+import org.simpleframework.core.type.AnnotationMetadata;
 
 import java.beans.Introspector;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,8 +23,8 @@ public class ConfigurationClassBeanDefinitionReader {
         this.registry = registry;
     }
 
-    public void loadBeanDefinitions(Set<ConfigurationClass> configurationModel) {
-        for (ConfigurationClass configClass : configurationModel) {
+    public void loadBeanDefinitions(Set<ConfigurationClass> configurationClasses) {
+        for (ConfigurationClass configClass : configurationClasses) {
             loadBeanDefinitionsForConfigurationClass(configClass);
         }
     }
@@ -36,6 +38,11 @@ public class ConfigurationClassBeanDefinitionReader {
         for (Method beanMethod : configClass.getBeanMethods()) {
             loadBeanDefinitionsForBeanMethod(configClass, beanMethod);
         }
+        loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
+    }
+
+    private void loadBeanDefinitionsFromRegistrars(Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> registrars) {
+        registrars.forEach((registrar, metadata) -> registrar.registerBeanDefinitions(metadata, this.registry));
     }
 
     private void loadBeanDefinitionsForBeanMethod(ConfigurationClass configClass, Method beanMethod) {

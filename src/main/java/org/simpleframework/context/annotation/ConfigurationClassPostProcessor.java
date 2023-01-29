@@ -29,7 +29,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
         for (String beanName : beanNames) {
             BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
             if (beanDefinition instanceof AnnotatedGenericBeanDefinition) {
-                beanDefinitions.add(new BeanDefinitionHolder(beanName, beanDefinition));
+                AnnotatedGenericBeanDefinition bd = (AnnotatedGenericBeanDefinition) beanDefinition;
+                beanDefinitions.add(new BeanDefinitionHolder(beanName, bd.getBeanClass(), bd));
             }
         }
         Set<ConfigurationClass> configurationClasses = parser.parse(beanDefinitions);

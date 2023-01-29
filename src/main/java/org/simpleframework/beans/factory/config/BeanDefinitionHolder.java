@@ -13,10 +13,13 @@ public class BeanDefinitionHolder {
 
     private final String beanName;
 
+    private final Class<?> beanClass;
 
-    public BeanDefinitionHolder(String beanName, BeanDefinition beanDefinition) {
+
+    public BeanDefinitionHolder(String beanName, Class<?> beanClass, BeanDefinition beanDefinition) {
         this.beanDefinition = beanDefinition;
         this.beanName = beanName;
+        this.beanClass = beanClass;
     }
 
     public BeanDefinition getBeanDefinition() {
@@ -25,5 +28,9 @@ public class BeanDefinitionHolder {
 
     public String getBeanName() {
         return beanName;
+    }
+
+    public Class<?> getBeanClass() {
+        return beanClass;
     }
 }

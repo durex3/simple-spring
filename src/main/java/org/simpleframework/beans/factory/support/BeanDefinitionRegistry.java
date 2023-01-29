@@ -31,4 +31,6 @@ public interface BeanDefinitionRegistry {
     BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
     String[] getBeanDefinitionNames();
+
+    boolean containsBeanDefinition(String beanName);
 }

@@ -1,6 +1,5 @@
 package org.simpleframework.context.annotation;
 
-import org.simpleframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.simpleframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
@@ -38,8 +37,6 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
     protected void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
         RootBeanDefinition classPostProcessor = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
         registry.registerBeanDefinition(classPostProcessor.getBeanClassName(), classPostProcessor);
-        RootBeanDefinition proxyCreator = new RootBeanDefinition(AnnotationAwareAspectJAutoProxyCreator.class);
-        registry.registerBeanDefinition(proxyCreator.getBeanClassName(), proxyCreator);
     }
 
     protected void doScan(String... basePackages) {
@@ -65,9 +62,14 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
             String beanName = null;
             for (String type : types) {
+                if (!isStereotypeWithNameValue(type)) {
+                    continue;
+                }
                 Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(type);
-                beanName = annotationAttributes.get("value").toString();
-                if (beanName.isEmpty()) {
+                if (!annotationAttributes.isEmpty()) {
+                    beanName = annotationAttributes.get("value").toString();
+                }
+                if (beanName == null || beanName.isEmpty()) {
                     String shortClassName = ClassUtils.getShortName(annotatedDef.getBeanClassName());
                     beanName = Introspector.decapitalize(shortClassName);
                 }

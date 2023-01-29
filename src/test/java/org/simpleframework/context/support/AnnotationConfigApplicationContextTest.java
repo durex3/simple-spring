@@ -111,8 +111,7 @@ class AnnotationConfigApplicationContextTest {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.aop");
         // 2.获取 bean
         LoginService loginService = (LoginService) applicationContext.getBean("loginService");
-        loginService.login("durex3", "123456");
+        String result = loginService.login("durex3", "123456");
+        Assertions.assertEquals("登录成功", result);
     }
-
-
 }
