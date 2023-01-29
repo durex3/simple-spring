@@ -148,7 +148,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     protected RootBeanDefinition getMergedBeanDefinition(BeanDefinition bd) {
         if (bd instanceof RootBeanDefinition) {
-            return ((RootBeanDefinition) bd).cloneBeanDefinition();
+            return (RootBeanDefinition) bd;
         }
         return new RootBeanDefinition(bd);
     }

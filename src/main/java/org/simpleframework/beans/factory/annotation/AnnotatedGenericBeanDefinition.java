@@ -3,6 +3,7 @@ package org.simpleframework.beans.factory.annotation;
 import org.simpleframework.beans.factory.support.RootBeanDefinition;
 import org.simpleframework.core.type.AnnotationMetadata;
 import org.simpleframework.core.type.classreading.SimpleAnnotationMetadata;
+import org.simpleframework.util.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class AnnotatedGenericBeanDefinition extends RootBeanDefinition implement
 
     public AnnotatedGenericBeanDefinition(Class<?> beanClass) {
         setBeanClass(beanClass);
-        Set<Annotation> annotations = Arrays.stream(beanClass.getAnnotations()).collect(Collectors.toSet());
+        Set<Annotation> annotations = AnnotationUtils.getAnnotations(beanClass);
         this.metadata = new SimpleAnnotationMetadata(annotations);
     }
 

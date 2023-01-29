@@ -5,6 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author liugelong
@@ -33,6 +37,23 @@ public class AnnotationUtils {
             }
         }
         return null;
+    }
+
+    public static Set<Annotation> getAnnotations(Class<?> clazz) {
+        Set<Annotation> result = new HashSet<>();
+        // 递归检索该类注解的注解中是否存在目标注解
+        for (Annotation declaredAnn : clazz.getDeclaredAnnotations()) {
+            Class<? extends Annotation> declaredType = declaredAnn.annotationType();
+            if (!isInJavaLangAnnotationPackage(declaredAnn)) {
+                // 进入递归
+                Set<Annotation> list = getAnnotations(declaredType);
+                if (!list.isEmpty()) {
+                    result.addAll(list);
+                }
+                result.add(declaredAnn);
+            }
+        }
+        return result;
     }
 
     public static Object getValue(Annotation annotation, String attributeName) {

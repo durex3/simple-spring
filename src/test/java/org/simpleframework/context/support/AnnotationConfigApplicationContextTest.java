@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
  */
 class AnnotationConfigApplicationContextTest {
 
-
     @Test
     void testAnnotationConfigApplicationContextByScan() {
         // 1.创建 applicationContext

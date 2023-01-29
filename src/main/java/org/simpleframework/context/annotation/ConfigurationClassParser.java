@@ -3,6 +3,7 @@ package org.simpleframework.context.annotation;
 import org.simpleframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.config.BeanDefinitionHolder;
+import org.simpleframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
@@ -33,13 +34,14 @@ public class ConfigurationClassParser {
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(beanName + " No bean class specified on bean definition");
         }
-        Set<String> types = beanDefinition.getMetadata().getAnnotationTypes();
-        if (types.contains("org.simpleframework.context.annotation.Configuration")) {
+        if (beanDefinition.getMetadata().hasAnnotation(Component.class.getName())) {
             ConfigurationClass configurationClass = new ConfigurationClass(beanDefinition.getMetadata(), beanName);
             // 获取 @Bean methods
             Method[] methods = beanClass.getDeclaredMethods();
             getBeanMethod(methods).forEach(configurationClass::addBeanMethod);
-            result.add(configurationClass);
+            if (!configurationClass.getBeanMethods().isEmpty()) {
+                result.add(configurationClass);
+            }
         }
     }
 
