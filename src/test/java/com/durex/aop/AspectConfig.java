@@ -1,6 +1,7 @@
 package com.durex.aop;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.simpleframework.context.annotation.EnableAspectJAutoProxy;
 import org.simpleframework.stereotype.Component;
@@ -35,5 +36,18 @@ public class AspectConfig {
     @AfterThrowing(value = "pointcut()", throwing = "e")
     public void afterThrowing(JoinPoint joinPoint, Throwable e) {
         System.out.println("异常增强: " + e);
+    }
+
+    @Around(value = "execution(public * com.durex.aop.around.*.*(..))")
+    public Object around(ProceedingJoinPoint joinPoint) {
+        Object result = null;
+        System.out.println("前置增强: 注册校验, 参数===" + Arrays.toString(joinPoint.getArgs()));
+        try {
+            result = joinPoint.proceed();
+            System.out.println("返回增强: 返回值===" + result);
+        } catch (Throwable e) {
+            System.out.println("异常增强: " + e);
+        }
+        return result;
     }
 }

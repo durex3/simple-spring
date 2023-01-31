@@ -29,6 +29,7 @@ public class InstantiationModelAwarePointcutAdvisorImpl implements PointcutAdvis
         public static final String BEFORE = "org.aspectj.lang.annotation.Before";
         public static final String AFTER_RETURNING = "org.aspectj.lang.annotation.AfterReturning";
         public static final String AFTER_THROWING = "org.aspectj.lang.annotation.AfterThrowing";
+        public static final String AROUND = "org.aspectj.lang.annotation.Around";
     }
 
     public InstantiationModelAwarePointcutAdvisorImpl(AspectJExpressionPointcut pointcut, BeanFactory beanFactory, Method aspectJAdviceMethod, String aspectName) {
@@ -71,6 +72,9 @@ public class InstantiationModelAwarePointcutAdvisorImpl implements PointcutAdvis
                 break;
             case AspectJAnnotationType.AFTER_THROWING:
                 advice = new AspectJAfterThrowingAdvice(beanFactory.getBean(aspectName), aspectJAdviceMethod);
+                break;
+            case AspectJAnnotationType.AROUND:
+                advice = new AspectJAroundAdvice(beanFactory.getBean(aspectName), aspectJAdviceMethod);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported advice type on method: " + this.aspectJAdviceMethod.getName());

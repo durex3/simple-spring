@@ -1,6 +1,7 @@
 package org.simpleframework.context.support;
 
 import com.durex.aop.LoginService;
+import com.durex.aop.around.RegisterService;
 import com.durex.aware.Person;
 import com.durex.component.User;
 import com.durex.config.MyBeanFactoryPostProcessor;
@@ -113,5 +114,15 @@ class AnnotationConfigApplicationContextTest {
         LoginService loginService = (LoginService) applicationContext.getBean("loginService");
         String result = loginService.login("durex3", "123456");
         Assertions.assertEquals("登录成功", result);
+    }
+
+    @Test
+    void testAopAround() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.aop");
+        // 2.获取 bean
+        RegisterService registerService = (RegisterService) applicationContext.getBean("registerService");
+        String result = registerService.register("durex3", "123456");
+        Assertions.assertEquals("注册成功", result);
     }
 }
