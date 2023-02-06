@@ -33,4 +33,13 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
     default boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
         return true;
     }
+
+    /**
+     * <h2>bean 属性注入</h2>
+     *
+     * @param bean     bean 实例
+     * @param beanName bean 实例名字
+     */
+    default void postProcessProperties(Object bean, String beanName) throws BeansException {
+    }
 }

@@ -2,6 +2,9 @@ package org.simpleframework.context.support;
 
 import com.durex.aop.LoginService;
 import com.durex.aop.around.RegisterService;
+import com.durex.autowired.Camel;
+import com.durex.autowired.Pig;
+import com.durex.autowired.Sheep;
 import com.durex.aware.Person;
 import com.durex.component.User;
 import com.durex.config.MyBeanFactoryPostProcessor;
@@ -124,5 +127,18 @@ class AnnotationConfigApplicationContextTest {
         RegisterService registerService = (RegisterService) applicationContext.getBean("registerService");
         String result = registerService.register("durex3", "123456");
         Assertions.assertEquals("注册成功", result);
+    }
+
+    @Test
+    void testAutowired() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.autowired");
+        // 2.获取 bean
+        Pig pig = (Pig) applicationContext.getBean("pig");
+        Camel camel = (Camel) applicationContext.getBean("camel");
+        Sheep sheep = (Sheep) applicationContext.getBean("sheep");
+        Assertions.assertNotNull(pig);
+        Assertions.assertEquals(pig.getCamel(), camel);
+        Assertions.assertEquals(pig.getCamel().getSheep(), sheep);
     }
 }

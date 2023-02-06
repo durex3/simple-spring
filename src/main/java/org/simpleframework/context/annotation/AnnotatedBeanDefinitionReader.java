@@ -2,7 +2,9 @@ package org.simpleframework.context.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.simpleframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
+import org.simpleframework.beans.factory.support.RootBeanDefinition;
 import org.simpleframework.util.ClassUtils;
 
 import java.beans.Introspector;
@@ -27,6 +29,7 @@ public class AnnotatedBeanDefinitionReader {
         for (Class<?> componentClass : componentClasses) {
             registerBean(componentClass);
         }
+        registerAnnotationConfigProcessors(registry);
     }
 
     public void registerBean(Class<?> beanClass) {
@@ -43,6 +46,13 @@ public class AnnotatedBeanDefinitionReader {
 
     public <T> void registerBean(Class<T> beanClass, String name, Class<? extends Annotation>[] qualifiers) {
         doRegisterBean(beanClass, name, qualifiers);
+    }
+
+    protected void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
+        RootBeanDefinition classPostProcessor = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
+        registry.registerBeanDefinition(classPostProcessor.getBeanClassName(), classPostProcessor);
+        RootBeanDefinition autowiredPostProcessor = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+        registry.registerBeanDefinition(autowiredPostProcessor.getBeanClassName(), autowiredPostProcessor);
     }
 
     /**

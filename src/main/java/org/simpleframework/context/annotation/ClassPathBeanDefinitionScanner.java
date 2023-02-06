@@ -1,6 +1,7 @@
 package org.simpleframework.context.annotation;
 
 import org.simpleframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.simpleframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.simpleframework.beans.factory.config.BeanDefinition;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
 import org.simpleframework.beans.factory.support.RootBeanDefinition;
@@ -37,6 +38,8 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
     protected void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
         RootBeanDefinition classPostProcessor = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
         registry.registerBeanDefinition(classPostProcessor.getBeanClassName(), classPostProcessor);
+        RootBeanDefinition autowiredPostProcessor = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
+        registry.registerBeanDefinition(autowiredPostProcessor.getBeanClassName(), autowiredPostProcessor);
     }
 
     protected void doScan(String... basePackages) {
