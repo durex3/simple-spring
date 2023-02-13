@@ -1,5 +1,7 @@
 package org.simpleframework.beans.factory.annotation;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.BeanCreationException;
 import org.simpleframework.beans.factory.BeanFactory;
@@ -24,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0
  * @since 1.0 2023-02-06 12:18:09
  */
+@Slf4j
 public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
     private ConfigurableListableBeanFactory beanFactory;
@@ -81,7 +84,13 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
     }
 
     private Object getValue(String beanName, Class<?> clazz) {
-        Object value = beanFactory.getBean(beanName);
+        Object value = null;
+        try {
+            value = beanFactory.getBean(beanName);
+        } catch (Exception e) {
+            log.warn("no found bean: " + beanName);
+        }
+
         if (value == null) {
             Map<String, ?> beans = beanFactory.getBeansOfType(clazz);
             if (beans.isEmpty()) {
@@ -106,7 +115,14 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
         public void inject(Object bean, String beanName) throws IllegalAccessException {
             if (isField) {
                 Field field = (Field) this.member;
-                Object value = getValue(field.getName(), field.getDeclaringClass());
+                String name = field.getName();
+                if (field.isAnnotationPresent(Qualifier.class)) {
+                    name = field.getAnnotation(Qualifier.class).value();
+                    if (StringUtils.isBlank(name)) {
+                        throw new BeanCreationException("@Qualifier not  set bean name " + bean.getClass());
+                    }
+                }
+                Object value = getValue(name, field.getType());
                 if (value != null) {
                     ReflectionUtils.makeAccessible(field);
                     field.set(bean, value);
@@ -128,6 +144,12 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
                 Object[] arguments = new Object[argumentCount];
                 for (int i = 0; i < arguments.length; i++) {
                     String name = method.getParameters()[i].getName();
+                    if (method.isAnnotationPresent(Qualifier.class)) {
+                        name = method.getAnnotation(Qualifier.class).value();
+                        if (StringUtils.isBlank(name)) {
+                            throw new BeanCreationException("@Qualifier not  set bean name " + bean.getClass());
+                        }
+                    }
                     Class<?> type = method.getParameters()[i].getType();
                     Object value = getValue(name, type);
                     if (value == null) {

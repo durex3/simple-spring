@@ -1,6 +1,7 @@
 package com.durex.autowired;
 
 import org.simpleframework.beans.factory.annotation.Autowired;
+import org.simpleframework.beans.factory.annotation.Qualifier;
 import org.simpleframework.stereotype.Component;
 
 /**
@@ -11,10 +12,19 @@ import org.simpleframework.stereotype.Component;
 @Component
 public class Pig {
 
+    @Qualifier(value = "c")
     @Autowired
     private Camel camel;
 
+    @Qualifier(value = "watermelon")
+    @Autowired
+    private Fruits fruits;
+
     public Camel getCamel() {
         return camel;
+    }
+
+    public Fruits getFruits() {
+        return fruits;
     }
 }
