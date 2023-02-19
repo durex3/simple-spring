@@ -2,6 +2,7 @@ package org.simpleframework.context;
 
 import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.simpleframework.core.env.Environment;
 
 /**
  * <h1></h1>
@@ -40,4 +41,18 @@ public interface ConfigurableApplicationContext extends ApplicationContext {
      * @param postProcessor BeanFactory 后置处理器
      */
     void addBeanFactoryPostProcessor(BeanFactoryPostProcessor postProcessor);
+
+    /**
+     * <h1>设置环境对象</h1>
+     *
+     * @param environment 环境
+     */
+    void setEnvironment(Environment environment);
+
+    /**
+     * <h1>返回环境对象</h1>
+     *
+     * @return {@link Environment}
+     */
+    Environment getEnvironment();
 }

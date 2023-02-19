@@ -1,7 +1,9 @@
 package org.simpleframework.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.simpleframework.beans.BeansException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -77,6 +79,18 @@ public final class ClassUtils {
             current = current.getSuperclass();
         }
         return method;
+    }
+
+    public static <T> T instantiateClass(Class<T> clazz) {
+        if (clazz.isInterface()) {
+            throw new IllegalArgumentException(clazz + " Specified class is an interface");
+        }
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new BeansException(e.getMessage());
+        }
     }
 
     private static Method getMethodOrNull(Class<?> clazz, String methodName, Class<?>[] paramTypes) {

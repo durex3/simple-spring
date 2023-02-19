@@ -9,6 +9,8 @@ import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.simpleframework.beans.factory.support.BeanDefinitionRegistry;
 import org.simpleframework.context.ConfigurableApplicationContext;
+import org.simpleframework.core.env.Environment;
+import org.simpleframework.core.env.StandardEnvironment;
 import org.simpleframework.core.io.DefaultResourceLoader;
 import org.simpleframework.core.io.Resource;
 import org.simpleframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -34,6 +36,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     private String id = ObjectUtils.identityToString(this);
     private final ResourcePatternResolver resourcePatternResolver;
     private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
+    private Environment environment;
     private final Object startupShutdownMonitor = new Object();
     private final AtomicBoolean active = new AtomicBoolean();
     private final AtomicBoolean closed = new AtomicBoolean();
@@ -152,6 +155,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     @Override
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
         return getBeanFactory().getType(name);
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    @Override
+    public Environment getEnvironment() {
+        if (this.environment == null) {
+            this.environment = new StandardEnvironment();
+        }
+        return this.environment;
     }
 
     public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {

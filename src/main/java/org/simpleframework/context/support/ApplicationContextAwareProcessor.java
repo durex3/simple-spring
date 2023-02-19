@@ -4,6 +4,7 @@ import org.simpleframework.beans.BeansException;
 import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.context.ApplicationContextAware;
 import org.simpleframework.context.ConfigurableApplicationContext;
+import org.simpleframework.context.EnvironmentAware;
 
 /**
  * @author liugelong
@@ -31,6 +32,9 @@ public class ApplicationContextAwareProcessor implements BeanPostProcessor {
     }
 
     private void invokeAwareInterfaces(Object bean) {
+        if (bean instanceof EnvironmentAware) {
+            ((EnvironmentAware) bean).setEnvironment(this.applicationContext.getEnvironment());
+        }
         if (bean instanceof ApplicationContextAware) {
             ((ApplicationContextAware) bean).setApplicationContext(this.applicationContext);
         }
