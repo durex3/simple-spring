@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class AnnotationUtils {
         // 递归检索该类注解的注解中是否存在目标注解
         for (Annotation declaredAnn : clazz.getDeclaredAnnotations()) {
             Class<? extends Annotation> declaredType = declaredAnn.annotationType();
-            if (!isInJavaLangAnnotationPackage(declaredAnn))
+            if (isInJavaLangAnnotationPackage(declaredAnn))
                 // 进入递归
                 annotation = findAnnotation(declaredType, annotationType);
             if (annotation != null) {
@@ -42,7 +43,7 @@ public class AnnotationUtils {
         // 递归检索该类注解的注解中是否存在目标注解
         for (Annotation declaredAnn : clazz.getDeclaredAnnotations()) {
             Class<? extends Annotation> declaredType = declaredAnn.annotationType();
-            if (!isInJavaLangAnnotationPackage(declaredAnn)) {
+            if (isInJavaLangAnnotationPackage(declaredAnn)) {
                 // 进入递归
                 Set<Annotation> list = getAnnotations(declaredType);
                 if (!list.isEmpty()) {
@@ -71,6 +72,17 @@ public class AnnotationUtils {
     }
 
     public static boolean isInJavaLangAnnotationPackage(Annotation annotation) {
-        return (annotation != null && annotation.annotationType().getName().startsWith("java.lang.annotation"));
+        return (annotation == null || !annotation.annotationType().getName().startsWith("java.lang.annotation"));
+    }
+
+    public static boolean isCandidateClass(Annotation[] annotations, Collection<Class<? extends Annotation>> annotationTypes) {
+        for (Class<? extends Annotation> annotationType : annotationTypes) {
+            for (Annotation annotation : annotations) {
+                if (annotation.annotationType() == annotationType) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

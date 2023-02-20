@@ -40,7 +40,7 @@ public class DynamicAdvisedInterceptor implements MethodInterceptor {
             }
         }
 
-        Object retVal;
+        Object retVal = null;
         if (advisors.isEmpty()) {
             retVal = methodProxy.invokeSuper(proxy, args);
         } else {
@@ -53,6 +53,7 @@ public class DynamicAdvisedInterceptor implements MethodInterceptor {
                     invokeBeforeAdvices(otherAdvisors, method, args, target);
                     retVal = methodProxy.invokeSuper(proxy, args);
                     invokeAfterReturningAdvices(otherAdvisors, method, args, retVal, target);
+
                 } catch (Exception e) {
                     invokeAfterThrowingAdvices(otherAdvisors, method, args, e, target);
                 }
@@ -62,9 +63,10 @@ public class DynamicAdvisedInterceptor implements MethodInterceptor {
                             advisor.getAdvice() instanceof AspectJAroundAdvice)
                     .collect(Collectors.toList());
             // 环绕增强
-            retVal = invokeAroundAdvices(aroundAdvisors, method, args, target);
+            if (!aroundAdvisors.isEmpty()) {
+                retVal = invokeAroundAdvices(aroundAdvisors, method, args, target);
+            }
         }
-
         return retVal;
     }
 

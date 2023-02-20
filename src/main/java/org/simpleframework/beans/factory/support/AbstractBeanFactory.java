@@ -9,6 +9,7 @@ import org.simpleframework.beans.factory.config.BeanPostProcessor;
 import org.simpleframework.beans.factory.config.ConfigurableBeanFactory;
 import org.simpleframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.simpleframework.util.ClassUtils;
+import org.simpleframework.util.StringValueResolver;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -27,6 +28,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
     private volatile boolean hasInstantiationAwareBeanPostProcessors;
     private final ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+    private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
 
     protected abstract BeanDefinition getBeanDefinition(String beanName);
 
@@ -107,6 +109,31 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         }
 
         return false;
+    }
+
+    @Override
+    public void addEmbeddedValueResolver(StringValueResolver valueResolver) {
+        this.embeddedValueResolvers.add(valueResolver);
+    }
+
+    @Override
+    public boolean hasEmbeddedValueResolver() {
+        return !this.embeddedValueResolvers.isEmpty();
+    }
+
+    @Override
+    public String resolveEmbeddedValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        String result = value;
+        for (StringValueResolver resolver : this.embeddedValueResolvers) {
+            result = resolver.resolveStringValue(result);
+            if (result == null) {
+                return null;
+            }
+        }
+        return result;
     }
 
     public List<BeanPostProcessor> getBeanPostProcessors() {

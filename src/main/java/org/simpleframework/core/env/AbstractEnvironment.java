@@ -29,4 +29,9 @@ public abstract class AbstractEnvironment implements Environment {
     public String getProperty(String key) {
         return propertyResolver.getProperty(key);
     }
+
+    @Override
+    public String resolvePlaceholders(String text) {
+        return propertyResolver.resolvePlaceholders(text);
+    }
 }

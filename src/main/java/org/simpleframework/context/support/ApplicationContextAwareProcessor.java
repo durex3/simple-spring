@@ -22,7 +22,7 @@ public class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (!(bean instanceof ApplicationContextAware)) {
+        if (!(bean instanceof ApplicationContextAware || bean instanceof EnvironmentAware)) {
             return bean;
         }
 

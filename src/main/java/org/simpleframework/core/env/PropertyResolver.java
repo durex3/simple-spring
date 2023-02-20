@@ -12,4 +12,6 @@ public interface PropertyResolver {
     boolean containsProperty(String key);
 
     String getProperty(String key);
+
+    String resolvePlaceholders(String text);
 }

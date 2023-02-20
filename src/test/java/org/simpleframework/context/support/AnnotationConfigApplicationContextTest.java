@@ -153,4 +153,13 @@ class AnnotationConfigApplicationContextTest {
         Assertions.assertNotNull(pig);
         Assertions.assertEquals(pig.getFruits(), watermelon);
     }
+
+    @Test
+    void testValue() {
+        // 1.创建 applicationContext
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.durex.autowired");
+        // 2.获取 bean
+        Pig pig = (Pig) applicationContext.getBean("pig");
+        Assertions.assertEquals(pig.getName(), "durex3");
+    }
 }

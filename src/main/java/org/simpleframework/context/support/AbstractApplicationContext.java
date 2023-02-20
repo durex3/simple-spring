@@ -180,6 +180,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     }
 
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+        if (!beanFactory.hasEmbeddedValueResolver()) {
+            beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
+        }
         beanFactory.preInstantiateSingletons();
     }
 

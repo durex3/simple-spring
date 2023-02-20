@@ -7,16 +7,16 @@ import org.simpleframework.beans.factory.BeanCreationException;
 import org.simpleframework.beans.factory.BeanFactory;
 import org.simpleframework.beans.factory.BeanFactoryAware;
 import org.simpleframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.simpleframework.beans.factory.config.DependencyDescriptor;
 import org.simpleframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
+import org.simpleframework.util.AnnotationUtils;
 import org.simpleframework.util.ReflectionUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -34,6 +34,12 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
      * 缓存注入信息元数据
      */
     private final Map<String, InjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(256);
+    private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(2);
+
+    public AutowiredAnnotationBeanPostProcessor() {
+        this.autowiredAnnotationTypes.add(Autowired.class);
+        this.autowiredAnnotationTypes.add(Value.class);
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) {
@@ -66,16 +72,14 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
         final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
         // 标记在字段上
         for (Field field : clazz.getDeclaredFields()) {
-            Autowired autowired = field.getAnnotation(Autowired.class);
-            if (autowired != null) {
+            if (AnnotationUtils.isCandidateClass(field.getAnnotations(), autowiredAnnotationTypes)) {
                 currElements.add(new AutowiredFieldElement(field, true));
             }
         }
 
         // 标记在方法上
         for (Method method : clazz.getDeclaredMethods()) {
-            Autowired autowired = method.getAnnotation(Autowired.class);
-            if (autowired != null) {
+            if (AnnotationUtils.isCandidateClass(method.getAnnotations(), autowiredAnnotationTypes)) {
                 currElements.add(new AutowiredMethodElement(method, false));
             }
         }
@@ -83,24 +87,28 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
         return new InjectionMetadata(clazz, currElements);
     }
 
-    private Object getValue(String beanName, Class<?> clazz) {
+    private Object getValue(DependencyDescriptor desc) {
         Object value = null;
         try {
-            value = beanFactory.getBean(beanName);
+            value = beanFactory.getBean(desc.getTargetBeanName());
         } catch (Exception e) {
-            log.warn("no found bean: " + beanName);
+            log.warn("no found bean: " + desc.getTargetBeanName());
         }
 
         if (value == null) {
-            Map<String, ?> beans = beanFactory.getBeansOfType(clazz);
-            if (beans.isEmpty()) {
-                return null;
+            Map<String, ?> beans = beanFactory.getBeansOfType(desc.getTargetBeanClass());
+            if (!beans.isEmpty()) {
+                if (beans.size() > 1) {
+                    throw new BeanCreationException("expected single matching bean but found " + beans.size());
+                }
+                Collection<?> values = beans.values();
+                value = values.iterator().next();
             }
-            if (beans.size() > 1) {
-                throw new BeanCreationException("expected single matching bean but found " + beans.size());
-            }
-            Collection<?> values = beans.values();
-            value = values.iterator().next();
+        }
+
+        if (value == null) {
+            // @Value 注入
+            value = beanFactory.resolveEmbeddedValue(desc.getTargetValue());
         }
         return value;
     }
@@ -116,13 +124,18 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
             if (isField) {
                 Field field = (Field) this.member;
                 String name = field.getName();
+                DependencyDescriptor desc = new DependencyDescriptor();
                 if (field.isAnnotationPresent(Qualifier.class)) {
                     name = field.getAnnotation(Qualifier.class).value();
                     if (StringUtils.isBlank(name)) {
                         throw new BeanCreationException("@Qualifier not  set bean name " + bean.getClass());
                     }
+                } else if (field.isAnnotationPresent(Value.class)) {
+                    desc.setTargetValue(field.getAnnotation(Value.class).value());
                 }
-                Object value = getValue(name, field.getType());
+                desc.setTargetBeanName(name);
+                desc.setTargetBeanClass(field.getType());
+                Object value = getValue(desc);
                 if (value != null) {
                     ReflectionUtils.makeAccessible(field);
                     field.set(bean, value);
@@ -143,6 +156,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
                 int argumentCount = method.getParameterCount();
                 Object[] arguments = new Object[argumentCount];
                 for (int i = 0; i < arguments.length; i++) {
+                    DependencyDescriptor desc = new DependencyDescriptor();
                     String name = method.getParameters()[i].getName();
                     if (method.isAnnotationPresent(Qualifier.class)) {
                         name = method.getAnnotation(Qualifier.class).value();
@@ -151,7 +165,9 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
                         }
                     }
                     Class<?> type = method.getParameters()[i].getType();
-                    Object value = getValue(name, type);
+                    desc.setTargetBeanName(name);
+                    desc.setTargetBeanClass(type);
+                    Object value = getValue(desc);
                     if (value == null) {
                         throw new BeanCreationException("No qualifying bean of type " + type);
                     }

@@ -1,6 +1,7 @@
 package org.simpleframework.beans.factory.config;
 
 import org.simpleframework.beans.factory.BeanFactory;
+import org.simpleframework.util.StringValueResolver;
 
 /**
  * @author liugelong
@@ -21,4 +22,26 @@ public interface ConfigurableBeanFactory extends SingletonBeanRegistry, BeanFact
     void destroySingletons();
 
     ClassLoader getBeanClassLoader();
+
+    /**
+     * <h1>添加解析字符串值策略的接口</h1>
+     *
+     * @param valueResolver 字符串解析器
+     */
+    void addEmbeddedValueResolver(StringValueResolver valueResolver);
+
+    /**
+     * <h2>判断是否有字符串解析器</h2>
+     *
+     * @return true false
+     */
+    boolean hasEmbeddedValueResolver();
+
+    /**
+     * <h1>解析给定的模板值，例如 ${...}</h1>
+     *
+     * @param value 模板值
+     * @return 解析后的实际值
+     */
+    String resolveEmbeddedValue(String value);
 }
